@@ -1,0 +1,17 @@
+[
+{
+  "modid": "CB",
+  "name": "Controller Block",
+  "description": "",
+  "version": "1.0",
+  "credits": "",
+  "logoFile": "",
+  "mcversion": "",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["Controller Block Mod Team"],
+  "parent":"",
+  "screenshots": [],
+  "dependencies": []
+}
+]
