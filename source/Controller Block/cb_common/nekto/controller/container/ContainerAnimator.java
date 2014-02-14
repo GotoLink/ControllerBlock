@@ -48,7 +48,7 @@ public class ContainerAnimator extends ContainerBase {
 	}
 
 	public String getFrame() {
-		return "Frame: " + new Integer(this.oldFrame + 1).toString();
+		return "Frame: " + Integer.toString(this.oldFrame + 1);
 	}
 
 	public String getMax() {

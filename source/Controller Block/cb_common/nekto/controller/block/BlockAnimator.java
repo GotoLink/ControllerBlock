@@ -7,30 +7,32 @@ import java.util.Random;
 import nekto.controller.animator.Mode;
 import nekto.controller.core.Controller;
 import nekto.controller.item.ItemRemote;
+import nekto.controller.network.PacketHandler;
 import nekto.controller.ref.GeneralRef;
 import nekto.controller.tile.TileEntityAnimator;
 import nekto.controller.tile.TileEntityBase;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 public class BlockAnimator extends BlockBase {
-	public BlockAnimator(int id) {
-		super(id);
-		setUnlocalizedName("animator");
+	public BlockAnimator() {
+		super();
+        func_149663_c("animator");
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world) {
+	public TileEntity func_149915_a(World world, int i) {
 		return new TileEntityAnimator();
 	}
 
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean func_149727_a(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
 		if (par5EntityPlayer.getCurrentEquippedItem() == null || !(par5EntityPlayer.getCurrentEquippedItem().getItem() instanceof ItemRemote)) {
 			if (!par1World.isBlockIndirectlyGettingPowered(par2, par3, par4))//We don't want to enable any changes when block is powered
 			{
-				if (par1World.getBlockTileEntity(par2, par3, par4) instanceof TileEntityAnimator)
+				if (par1World.func_147438_o(par2, par3, par4) instanceof TileEntityAnimator)
 					par5EntityPlayer.openGui(Controller.instance, GeneralRef.GUI_ID, par1World, par2, par3, par4);
 				return true;
 			}
@@ -40,10 +42,10 @@ public class BlockAnimator extends BlockBase {
 
 	@Override
 	protected void dropItems(World world, TileEntityBase<?> tile, Iterator<?> itr, int par2, int par3, int par4) {
-		List<int[]> frames = null;
+		List<Object[]> frames = null;
 		int index = 0;
 		while (itr.hasNext()) {
-			frames = (List<int[]>) itr.next();
+			frames = (List<Object[]>) itr.next();
 			if (frames != null && index != ((TileEntityAnimator) tile).getFrame())
 				super.dropItems(world, tile, frames.iterator(), par2, par3, par4);
 			index++;
@@ -51,13 +53,13 @@ public class BlockAnimator extends BlockBase {
 	}
 
 	@Override
-	public int tickRate(World par1World) {
+	public int func_149738_a(World par1World) {
 		return 2;
 	}
 
 	@Override
-	public void updateTick(World par1World, int par2, int par3, int par4, Random par5Random) {
-		TileEntityAnimator tile = (TileEntityAnimator) par1World.getBlockTileEntity(par2, par3, par4);
+	public void func_149674_a(World par1World, int par2, int par3, int par4, Random par5Random) {
+		TileEntityAnimator tile = (TileEntityAnimator) par1World.func_147438_o(par2, par3, par4);
 		//FMLLog.getLogger().info(tile.getDelay()+" ticked "+tile.getFrame());//DEBUG
 		boolean flag = par1World.isBlockIndirectlyGettingPowered(par2, par3, par4);
 		if (!(tile.isWaiting() && flag))
@@ -65,7 +67,7 @@ public class BlockAnimator extends BlockBase {
 				if (tile.getFrame() < tile.getBaseList().size())
 					previousFrame(par1World, tile);
 				nextFrame(par1World, tile);
-				par1World.scheduleBlockUpdate(par2, par3, par4, this.blockID, this.tickRate(par1World) + tile.getDelay());//Here we loop the ticks
+				par1World.func_147464_a(par2, par3, par4, this, this.func_149738_a(par1World) + tile.getDelay());//Here we loop the ticks
 				tile.setCount(tile.getCount() + 1);
 			}
 		if (!flag && tile.getFrame() == 0)
@@ -98,23 +100,23 @@ public class BlockAnimator extends BlockBase {
 				tile.setFrame(tile.getFrame() - 1);
 			break;
 		}
-		Iterator<int[]> itr = tile.getBaseList().get(tile.getFrame()).listIterator();//build next frame
+		Iterator<Object[]> itr = tile.getBaseList().get(tile.getFrame()).listIterator();//build next frame
 		setUnactiveBlocks(par1World, itr);
 	}
 
 	private void previousFrame(World par1World, TileEntityAnimator tile) {
-		Iterator<int[]> oldItr = tile.getBaseList().get(tile.getFrame()).listIterator();//erase previous frame
+		Iterator<Object[]> oldItr = tile.getBaseList().get(tile.getFrame()).listIterator();//erase previous frame
 		setActiveBlocks(par1World, oldItr);
 	}
 
 	@Override
-	public void onRedstoneChange(World par1World, int par2, int par3, int par4, int par5, boolean powered, TileEntityBase<?> tile) {
+	public void onRedstoneChange(World par1World, int par2, int par3, int par4, Block par5, boolean powered, TileEntityBase<?> tile) {
 		if (powered)//Powered but previously not powered
 		{
 			if (!((TileEntityAnimator) tile).hasRemoved()) {
 				for (int frame = 0; frame < tile.getBaseList().size(); frame++) {
 					if (((TileEntityAnimator) tile).getFrame() != frame) {
-						Iterator<int[]> itr = ((TileEntityAnimator) tile).getBaseList().get(frame).listIterator();
+						Iterator<Object[]> itr = ((TileEntityAnimator) tile).getBaseList().get(frame).listIterator();
 						setActiveBlocks(par1World, itr);
 					}
 				}
@@ -126,7 +128,7 @@ public class BlockAnimator extends BlockBase {
 				((TileEntityAnimator) tile).setMode(Mode.REVERSE);
 			else if (((TileEntityAnimator) tile).getMode() != Mode.REVERSE) {
 				for (int frame = 0; frame < tile.getBaseList().size(); frame++) {
-					Iterator<int[]> itr = ((TileEntityAnimator) tile).getBaseList().get(frame).listIterator();
+					Iterator<Object[]> itr = ((TileEntityAnimator) tile).getBaseList().get(frame).listIterator();
 					setUnactiveBlocks(par1World, itr);//Make all the blocks reappear
 				}
 				((TileEntityAnimator) tile).setRemoved(false);
@@ -134,6 +136,7 @@ public class BlockAnimator extends BlockBase {
 			}
 		}
 		if (powered || ((TileEntityAnimator) tile).getFrame() != 0)
-			par1World.scheduleBlockUpdate(par2, par3, par4, this.blockID, this.tickRate(par1World) + ((TileEntityAnimator) tile).getDelay());
+			par1World.func_147464_a(par2, par3, par4, this, this.func_149738_a(par1World) + ((TileEntityAnimator) tile).getDelay());
+        PacketHandler.sendDescription((TileEntityAnimator)tile, par1World);
 	}
 }

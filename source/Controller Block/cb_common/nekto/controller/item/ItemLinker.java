@@ -7,11 +7,12 @@ import nekto.controller.tile.TileEntityBase;
 import nekto.controller.tile.TileEntityController;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 
 public class ItemLinker extends ItemBase {
-	public ItemLinker(int id) {
-		super(id);
+	public ItemLinker() {
+		super();
 		setUnlocalizedName("linker");
 	}
 
@@ -32,10 +33,10 @@ public class ItemLinker extends ItemBase {
 				this.link.setEditing(false);
 				this.link.setLinker(null);
 				this.link = tempTile;
-				player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_2));
+				player.func_146105_b(new ChatComponentText(MESSAGE_2));
 			}
 			tempTile.setLinker(this);
-			player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_1 + par4 + ", " + par5 + ", " + par6));
+			player.func_146105_b(new ChatComponentText(MESSAGE_1 + par4 + ", " + par5 + ", " + par6));
 			setEditAndTag(new int[] { par4, par5, par6 }, stack);
 			return true;
 		} else if (tempTile.getLinker() == this) {
@@ -43,7 +44,7 @@ public class ItemLinker extends ItemBase {
 			tempTile.setEditing(false);
 			stack.getTagCompound().removeTag(KEYTAG);
 			this.resetLinker();
-			player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_2));
+			player.func_146105_b(new ChatComponentText(MESSAGE_2));
 			return true;
 		}
 		return false;

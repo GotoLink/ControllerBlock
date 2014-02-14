@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import cpw.mods.fml.common.registry.GameData;
 import nekto.controller.animator.Mode;
 import nekto.controller.item.ItemRemote;
 import nekto.controller.network.PacketHandler;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.packet.Packet;
+import net.minecraft.network.Packet;
 
-public class TileEntityAnimator extends TileEntityBase<List<int[]>> {
+public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	private int frame = 0, delay = 0, count = 0, max = -1;
 	private Mode currMode = Mode.ORDER;
 	private boolean removed;
@@ -23,7 +25,7 @@ public class TileEntityAnimator extends TileEntityBase<List<int[]>> {
 	}
 
 	@Override
-	protected List<int[]> getBlockList() {
+	protected List<Object[]> getBlockList() {
 		return getBaseList().get(frame);
 	}
 
@@ -33,19 +35,25 @@ public class TileEntityAnimator extends TileEntityBase<List<int[]>> {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
-		super.writeToNBT(par1NBTTagCompound);
+	public void func_145841_b(NBTTagCompound par1NBTTagCompound) {
+		super.func_145841_b(par1NBTTagCompound);
 		par1NBTTagCompound.setInteger("frame", this.frame);
 		par1NBTTagCompound.setInteger("delay", this.delay);
 		par1NBTTagCompound.setInteger("max", this.max);
 		par1NBTTagCompound.setInteger("count", this.count);
 		par1NBTTagCompound.setShort("mode", (short) this.getMode().ordinal());
 		par1NBTTagCompound.setBoolean("removed", this.removed);
-		NBTTagList tags = new NBTTagList("frames");
+		NBTTagList tags = new NBTTagList();
 		for (int index = 0; index < getBaseList().size(); index++) {
-			NBTTagCompound tag = new NBTTagCompound(Integer.toString(index));
+			NBTTagCompound tag = new NBTTagCompound();
+            Object[] objects;
+            int[] data;
 			for (int block = 0; block < getBaseList().get(index).size(); block++) {
-				tag.setIntArray(Integer.toString(block), (getBaseList().get(index).get(block)));
+                objects = getBaseList().get(index).get(block);
+                data = new int[objects.length];
+                System.arraycopy(objects, 1, data, 1, objects.length-1);
+                data[0] = GameData.blockRegistry.getId((Block) objects[0]);
+				tag.setIntArray(Integer.toString(block), data);
 			}
 			tags.appendTag(tag);
 		}
@@ -53,8 +61,8 @@ public class TileEntityAnimator extends TileEntityBase<List<int[]>> {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
-		super.readFromNBT(par1NBTTagCompound);
+	public void func_145839_a(NBTTagCompound par1NBTTagCompound) {
+		super.func_145839_a(par1NBTTagCompound);
 		int length = par1NBTTagCompound.getInteger("length");
 		this.frame = par1NBTTagCompound.getInteger("frame");
 		this.delay = par1NBTTagCompound.getInteger("delay");
@@ -63,27 +71,29 @@ public class TileEntityAnimator extends TileEntityBase<List<int[]>> {
 		this.setMode(Mode.values()[par1NBTTagCompound.getShort("mode")]);
 		this.removed = par1NBTTagCompound.getBoolean("removed");
 		for (int i = 0; i < length; i++) {
-			NBTTagCompound tag = ((NBTTagCompound) par1NBTTagCompound.getTagList("frames").tagAt(i));
-			List<int[]> list = new ArrayList<int[]>();
+			NBTTagCompound tag = par1NBTTagCompound.func_150295_c("frames", 10).func_150305_b(i);
+			List<Object[]> list = new ArrayList<Object[]>();
 			@SuppressWarnings("unchecked")
-			Iterator<NBTTagIntArray> itr = tag.getTags().iterator();
-			while (itr.hasNext())
-				list.add(itr.next().intArray);
+			Iterator<NBTTagIntArray> itr = tag.func_150296_c().iterator();
+            int[] data;
+            Object[] objects;
+			while (itr.hasNext()){
+                data = itr.next().func_150302_c();
+                objects = new Object[data.length];
+                objects[0] = GameData.blockRegistry.get(data[0]);
+                System.arraycopy(data, 1, objects, 1, data.length-1);
+				list.add(objects);
+            }
 			this.getBaseList().add(list);
 		}
 	}
 
-	@Override
-	public Packet getDescriptionPacket() {
-		return PacketHandler.getPacket(this);
-	}
+    @Override
+    public String func_145825_b() {
+        return "Animator.inventory";
+    }
 
-	@Override
-	public String getInvName() {
-		return "Animator.inventory";
-	}
-
-	@Override
+    @Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		return (i == 0 && itemstack.getItem() instanceof ItemRemote);
 	}
@@ -106,7 +116,7 @@ public class TileEntityAnimator extends TileEntityBase<List<int[]>> {
 
 	public void setFrame(int i) {
 		while (getBaseList().size() <= i)
-			getBaseList().add(new ArrayList<int[]>());
+			getBaseList().add(new ArrayList<Object[]>());
 		this.frame = i;
 	}
 

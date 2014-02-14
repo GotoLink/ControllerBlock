@@ -4,13 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import nekto.controller.tile.TileEntityBase;
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -32,8 +34,8 @@ public abstract class ItemBase extends Item {
 	public int[] corner = null;
 	private boolean isCornerMode = false;
 
-	public ItemBase(int id) {
-		super(id);
+	public ItemBase() {
+		super();
 		setMaxStackSize(1);
 		setCreativeTab(CreativeTabs.tabBlock);
 	}
@@ -57,13 +59,13 @@ public abstract class ItemBase extends Item {
 	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
 		if (!world.isRemote) {
 			MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, player, true);
-			if (movingobjectposition != null && movingobjectposition.typeOfHit == EnumMovingObjectType.TILE) {
+			if (movingobjectposition != null && movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
 				int i = movingobjectposition.blockX;
 				int j = movingobjectposition.blockY;
 				int k = movingobjectposition.blockZ;
 				TileEntityBase<?> tempTile = null;
 				if (isController(i, j, k, world)) {
-					tempTile = (TileEntityBase<?>) world.getBlockTileEntity(i, j, k);
+					tempTile = (TileEntityBase<?>) world.func_147438_o(i, j, k);
 				}
 				if (itemStack.hasTagCompound() && itemStack.stackTagCompound.hasKey(KEYTAG)) {
 					int[] pos = null;
@@ -75,24 +77,24 @@ public abstract class ItemBase extends Item {
 						} else//It had data on a block that doesn't exist anymore
 						{
 							itemStack.getTagCompound().removeTag(KEYTAG);
-							player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_2));
+							player.func_146105_b(new ChatComponentText(MESSAGE_2));
 							return itemStack;
 						}
 					}
 					if (tempTile != null) {
 						if (!onControlUsed(tempTile, player, i, j, k, itemStack))
-							player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_3));
+							player.func_146105_b(new ChatComponentText(MESSAGE_3));
 						//Another player might be editing, let's avoid any issue and do nothing.
-					} else if (!world.isAirBlock(i, j, k)) {
-						onBlockSelected(player, world, world.getBlockId(i, j, k), i, j, k, world.getBlockMetadata(i, j, k));
+					} else if (!world.func_147437_c(i, j, k)) {
+						onBlockSelected(player, world, world.func_147439_a(i, j, k), i, j, k, world.getBlockMetadata(i, j, k));
 					}
-				} else if (isController(i, j, k, world) && ((TileEntityBase<?>) world.getBlockTileEntity(i, j, k)).getLinker() == null) {
-					player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_1 + i + ", " + j + ", " + k));
-					this.link = (TileEntityBase<?>) world.getBlockTileEntity(i, j, k);
+				} else if (isController(i, j, k, world) && ((TileEntityBase<?>) world.func_147438_o(i, j, k)).getLinker() == null) {
+					player.func_146105_b(new ChatComponentText(MESSAGE_1 + i + ", " + j + ", " + k));
+					this.link = (TileEntityBase<?>) world.func_147438_o(i, j, k);
 					this.link.setLinker(this);
 					setEditAndTag(getStartData(i, j, k), itemStack);
 				} else
-					player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_0 + MESSAGE_4));
+					player.func_146105_b(new ChatComponentText(MESSAGE_0 + MESSAGE_4));
 			}
 		}
 		return itemStack;
@@ -119,25 +121,25 @@ public abstract class ItemBase extends Item {
 	 * 
 	 * @param player
 	 * @param id
-	 *            blockID from {@link World#getBlockId(int, int, int)}
+	 *            blockID from {@link World#func_147439_a(int, int, int)}
 	 * @param meta
 	 *            block metadata {@link World#getBlockMetadata(int, int, int)}
 	 */
-	protected void onBlockSelected(EntityPlayer player, World world, int id, int par4, int par5, int par6, int meta) {
+	protected void onBlockSelected(EntityPlayer player, World world, Block id, int par4, int par5, int par6, int meta) {
 		this.link.setEditing(true);
-		if (player.capabilities.isCreativeMode || id != 7/* bedrock case out */) {
+		if (player.capabilities.isCreativeMode || id != Blocks.bedrock/* bedrock case out */) {
 			if (!isCornerMode && !player.isSneaking())
 				this.link.add(player, id, par4, par5, par6, meta, true);
 			else {
 				if (corner == null) {
 					corner = new int[] { par4, par5, par6 };
-					player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_5 + par4 + ", " + par5 + ", " + par6));
+					player.func_146105_b(new ChatComponentText(MESSAGE_5 + par4 + ", " + par5 + ", " + par6));
 				} else {
 					if (!Arrays.equals(corner, new int[] { par4, par5, par6 })) {
 						onMultipleSelection(player, world, corner, new int[] { par4, par5, par6 });
-						player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_6));
+						player.func_146105_b(new ChatComponentText(MESSAGE_6));
 					} else
-						player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_7));
+						player.func_146105_b(new ChatComponentText(MESSAGE_7));
 					corner = null;
 				}
 			}
@@ -145,7 +147,7 @@ public abstract class ItemBase extends Item {
 	}
 
 	/**
-	 * What should happen if the selected {@link #TileEntityBase} by a player is
+	 * What should happen if the selected {@link TileEntityBase} by a player is
 	 * marked as already used by someone else
 	 * 
 	 * @param tempTile
@@ -182,7 +184,7 @@ public abstract class ItemBase extends Item {
 	 *            from the item {@link NBTTagCompound}
 	 */
 	protected void setItemVar(World world, int... data) {
-		this.link = (TileEntityBase<?>) world.getBlockTileEntity(data[0], data[1], data[2]);
+		this.link = (TileEntityBase<?>) world.func_147438_o(data[0], data[1], data[2]);
 	}
 
 	/**
@@ -192,7 +194,7 @@ public abstract class ItemBase extends Item {
 	 *         {@link #getControl()}
 	 */
 	private boolean isController(int x, int y, int z, World world) {
-		return getControl().isInstance(world.getBlockTileEntity(x, y, z));
+		return getControl().isInstance(world.func_147438_o(x, y, z));
 	}
 
 	/**
@@ -218,8 +220,8 @@ public abstract class ItemBase extends Item {
 		for (int x = corner[0]; x <= endCorner[0]; x++)
 			for (int y = corner[1]; y <= endCorner[1]; y++)
 				for (int z = corner[2]; z <= endCorner[2]; z++) {
-					if (!world.isAirBlock(x, y, z))
-						this.link.add(player, world.getBlockId(x, y, z), x, y, z, world.getBlockMetadata(x, y, z), false);
+					if (!world.func_147437_c(x, y, z))
+						this.link.add(player, world.func_147439_a(x, y, z), x, y, z, world.getBlockMetadata(x, y, z), false);
 				}
 	}
 }

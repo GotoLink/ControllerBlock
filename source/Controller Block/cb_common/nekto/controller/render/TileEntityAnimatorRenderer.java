@@ -24,12 +24,12 @@ public class TileEntityAnimatorRenderer extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float scale) {
+	public void func_147500_a(TileEntity tileEntity, double x, double y, double z, float scale) {
 		GL11.glPushMatrix();
-		setLighting(Minecraft.getMinecraft().theWorld, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, Controller.animator);
+		setLighting(Minecraft.getMinecraft().theWorld, tileEntity.field_145851_c, tileEntity.field_145848_d, tileEntity.field_145849_e, Controller.animator);
 		GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 		//bindTextureByName(GeneralRef.FULL_TEXTURE_PATH+((TileEntityBase)tileEntity).getTexture());
-		bindTexture(new ResourceLocation(GeneralRef.FULL_TEXTURE_PATH + ((TileEntityBase<?>) tileEntity).getTexture()));
+        func_147499_a(new ResourceLocation(GeneralRef.FULL_TEXTURE_PATH + ((TileEntityBase<?>) tileEntity).getTexture()));
 		GL11.glPushMatrix();
 		GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 		this.model.render(0.0625F);
@@ -47,7 +47,7 @@ public class TileEntityAnimatorRenderer extends TileEntitySpecialRenderer {
 
 	public void setLighting(World world, int i, int j, int k, Block block) {
 		Tessellator tessellator = Tessellator.instance;
-		float f = block.getBlockBrightness(world, i, j, k);
+		float f = world.getLightBrightness(i, j, k);
 		int l = world.getLightBrightnessForSkyBlocks(i, j, k, 0);
 		int l1 = l % 65536;
 		int l2 = l / 65536;

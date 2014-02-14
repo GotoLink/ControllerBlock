@@ -1,5 +1,6 @@
 package nekto.controller.client;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import nekto.controller.block.BlockBase;
 import nekto.controller.gui.AnimatorGUI;
 import nekto.controller.network.CommonProxy;
@@ -12,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
@@ -21,12 +21,12 @@ public class ClientProxy extends CommonProxy {
 		BlockBase.renderID = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(BlockBase.renderID, new ControllerRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBase.class, new TileEntityAnimatorRenderer());
-		KeyBindingRegistry.registerKeyBinding(new RemoteKeyHandler());
+        FMLCommonHandler.instance().bus().register(new RemoteKeyHandler());
 	}
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.func_147438_o(x, y, z);
 		if (tile instanceof TileEntityAnimator)
 			if (ID == GeneralRef.GUI_ID) {
 				return new AnimatorGUI(player.inventory, (TileEntityAnimator) tile, false);

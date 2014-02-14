@@ -32,7 +32,7 @@ public class ContainerBase extends Container {
 			} else
 				this.mergeItemStack(itemstack1, 2, this.getControl().getSizeInventory(), false);
 			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack) null);
+				slot.putStack(null);
 			} else {
 				slot.onSlotChanged();
 			}

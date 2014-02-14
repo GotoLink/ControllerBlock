@@ -1,107 +1,21 @@
 package nekto.controller.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import cpw.mods.fml.relauncher.Side;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import nekto.controller.animator.Mode;
-import nekto.controller.container.ContainerAnimator;
 import nekto.controller.core.Controller;
 import nekto.controller.item.ItemBase;
 import nekto.controller.ref.GeneralRef;
 import nekto.controller.tile.TileEntityAnimator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.tileentity.TileEntity;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
+import net.minecraft.world.World;
 
-public class PacketHandler implements IPacketHandler {
-	@Override
-	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
-		if (packet.channel.equals(GeneralRef.PACKET_CHANNELS[0])) {//Sent by AnimatorGUI to server when a button has been activated
-			//or by RemoteKeyHandler when player is holding a remote with a link
-			handleGuiChange(packet, (EntityPlayer) player);
-		} else if (packet.channel.equals(GeneralRef.PACKET_CHANNELS[1])) {//Sent by server to client
-			handleDescriptionPacket(packet, (EntityPlayer) player);
-		}
-	}
-
-	/**
-	 * Client method to handle a packet describing the TileEntityAnimator from
-	 * server
-	 * 
-	 * @param packet
-	 * @param player
-	 */
-	private static void handleDescriptionPacket(Packet250CustomPayload packet, EntityPlayer player) {
-		DataInputStream dat = new DataInputStream(new ByteArrayInputStream(packet.data));
-		try {
-			int x = dat.readInt();
-			int y = dat.readInt();
-			int z = dat.readInt();
-			TileEntity te = player.worldObj.getBlockTileEntity(x, y, z);
-			if (te instanceof TileEntityAnimator) {
-				TileEntityAnimator animator = (TileEntityAnimator) te;
-				animator.setEditing(dat.readBoolean());
-				if (!animator.isEditing() && animator.getStackInSlot(0) != null)
-					resetRemote(animator.getStackInSlot(0));
-				animator.setFrame(dat.readInt());
-				animator.setMaxFrame(dat.readInt());
-				animator.setCount(dat.readInt());
-				animator.resetDelay();
-				animator.setDelay(dat.readInt());
-				animator.setMode(Mode.values()[dat.readShort()]);
-			}
-		} catch (IOException i) {
-			i.printStackTrace();
-		}
-	}
-
-	/**
-	 * Server method to handle a client action in AnimatorGUI or
-	 * RemoteKeyHandler
-	 * 
-	 * @param packet
-	 * @param player
-	 */
-	private static void handleGuiChange(Packet250CustomPayload packet, EntityPlayer player) {
-		DataInputStream inStream = new DataInputStream(new ByteArrayInputStream(packet.data));
-		int[] data = new int[(packet.data.length - 1) / 4];
-		boolean remote;
-		try {
-			remote = inStream.readBoolean();
-			for (int id = 0; id < data.length; id++)
-				data[id] = inStream.readInt();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		TileEntity tile = player.worldObj.getBlockTileEntity(data[1], data[2], data[3]);
-		if (tile instanceof TileEntityAnimator) {
-			if (data[0] >= 0)//From AnimatorGUI
-			{
-				if (!remote) {
-					handleBlockData(player, (TileEntityAnimator) tile, data);
-				} else {
-					handleRemoteData(player, (TileEntityAnimator) tile, data);
-				}
-				if (player.openContainer instanceof ContainerAnimator && ((ContainerAnimator) player.openContainer).getControl() == tile)
-					player.openContainer.detectAndSendChanges();
-				player.worldObj.markBlockForUpdate(data[1], data[2], data[3]);
-			} else//From RemoteKeyHandler
-			{
-				player.openGui(Controller.instance, GeneralRef.REMOTE_GUI_ID, player.worldObj, data[1], data[2], data[3]);
-			}
-		}
-	}
-
-	private static void handleRemoteData(EntityPlayer player, TileEntityAnimator animator, int... data) {
+public class PacketHandler {
+	public static void handleRemoteData(EntityPlayer player, TileEntityAnimator animator, int... data) {
 		switch (data[0]) {
 		case 0://Frame selection
 			animator.setFrame(animator.getFrame() + 1);
@@ -124,7 +38,7 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
-	private static void handleBlockData(EntityPlayer player, TileEntityAnimator animator, int... data) {
+	public static void handleBlockData(EntityPlayer player, TileEntityAnimator animator, int... data) {
 		switch (data[0]) {
 		case 0://"+" button has been pressed
 			animator.setDelay(1);
@@ -148,8 +62,8 @@ public class PacketHandler implements IPacketHandler {
 			if (data[0] == 4)//This is a full reset
 			{
 				if (data.length > 6)
-					if (player.worldObj.getBlockTileEntity(data[4], data[5], data[6]) instanceof TileEntityAnimator) {
-						animator = (TileEntityAnimator) player.worldObj.getBlockTileEntity(data[4], data[5], data[6]);
+					if (player.worldObj.func_147438_o(data[4], data[5], data[6]) instanceof TileEntityAnimator) {
+						animator = (TileEntityAnimator) player.worldObj.func_147438_o(data[4], data[5], data[6]);
 					}
 				resetAnimator(animator);
 			}
@@ -175,54 +89,30 @@ public class PacketHandler implements IPacketHandler {
 		animator.setCount(0);
 	}
 
-	public static void resetRemote(ItemStack stack) {
-		if (stack.getItem() instanceof ItemBase) {
-			ItemBase remote = (ItemBase) stack.getItem();
-			remote.resetLinker();
-			if (stack.hasTagCompound()) {
-				stack.getTagCompound().removeTag(ItemBase.KEYTAG);
-			}
-		}
-	}
+    public static void resetRemote(ItemStack stack) {
+        if (stack.getItem() instanceof ItemBase) {
+            ItemBase remote = (ItemBase) stack.getItem();
+            remote.resetLinker();
+            if (stack.hasTagCompound()) {
+                stack.getTagCompound().removeTag(ItemBase.KEYTAG);
+            }
+        }
+    }
 
-	public static Packet getPacket(TileEntityAnimator animator) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(31);
-		DataOutputStream dos = new DataOutputStream(bos);
-		try {
-			dos.writeInt(animator.xCoord);
-			dos.writeInt(animator.yCoord);
-			dos.writeInt(animator.zCoord);
-			dos.writeBoolean(animator.isEditing());
-			dos.writeInt(animator.getFrame());
-			dos.writeInt(animator.getMaxFrame());
-			dos.writeInt(animator.getCount());
-			dos.writeInt(animator.getDelay());
-			dos.writeShort(animator.getMode().ordinal());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		Packet250CustomPayload pkt = new Packet250CustomPayload();
-		pkt.channel = GeneralRef.PACKET_CHANNELS[1];
-		pkt.data = bos.toByteArray();
-		pkt.length = bos.size();
-		pkt.isChunkDataPacket = true;
-		return pkt;
-	}
+    public static void sendDescription(TileEntityAnimator animator, World world) {
+        ByteBuf buf = Unpooled.buffer();
+        DescriptionPacket desc = new DescriptionPacket(animator);
+        desc.toBytes(buf);
+        FMLProxyPacket packet = new FMLProxyPacket(buf, GeneralRef.DESC_CHANNEL);
+        packet.setTarget(Side.CLIENT);
+        Controller.animatorDesc.sendToAllAround(packet, new NetworkRegistry.TargetPoint(world.provider.dimensionId, desc.data[0], desc.data[1], desc.data[2], 50));
+    }
 
-	public static Packet getGuiPacket(boolean remote, int... data) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(1 + 4 * data.length);
-		DataOutputStream outputStream = new DataOutputStream(bos);
-		try {
-			outputStream.writeBoolean(remote);
-			for (int d : data)
-				outputStream.writeInt(d);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		Packet250CustomPayload packet = new Packet250CustomPayload();
-		packet.channel = GeneralRef.PACKET_CHANNELS[0];
-		packet.data = bos.toByteArray();
-		packet.length = bos.size();
-		return packet;
-	}
+    public static void sendGuiChange(GuiChangePacket packet){
+        ByteBuf buf = Unpooled.buffer();
+        packet.toBytes(buf);
+        FMLProxyPacket message = new FMLProxyPacket(buf, GeneralRef.GUI_CHANNEL);
+        message.setTarget(Side.SERVER);
+        Controller.guiChange.sendToServer(message);
+    }
 }

@@ -1,10 +1,11 @@
 package nekto.controller.render;
 
 import nekto.controller.block.BlockBase;
+import nekto.controller.tile.TileEntityBase;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.world.IBlockAccess;
 
 import org.lwjgl.opengl.GL11;
@@ -16,8 +17,7 @@ public class ControllerRenderer implements ISimpleBlockRenderingHandler {
 	@Override
 	public void renderInventoryBlock(Block block, int i, int j, RenderBlocks renderblocks) {
 		if (block instanceof BlockBase) {
-			block.setBlockBoundsForItemRender();
-			TileEntityRenderer.instance.renderTileEntityAt(((BlockBase) block).createNewTileEntity(Minecraft.getMinecraft().theWorld), 0.0D, 0.0D, 0.0D, 0.0F);
+			TileEntityRendererDispatcher.field_147556_a.func_147546_a(TileEntityBase.class).func_147500_a(((BlockBase) block).func_149915_a(Minecraft.getMinecraft().theWorld, 0), 0.0D, 0.0D, 0.0D, 0.0F);
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		}
 	}
@@ -28,7 +28,7 @@ public class ControllerRenderer implements ISimpleBlockRenderingHandler {
 	}
 
 	@Override
-	public boolean shouldRender3DInInventory() {
+	public boolean shouldRender3DInInventory(int i) {
 		return true;
 	}
 

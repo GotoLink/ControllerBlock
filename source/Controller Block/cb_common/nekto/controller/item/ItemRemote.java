@@ -7,9 +7,11 @@ import java.util.List;
 
 import nekto.controller.tile.TileEntityAnimator;
 import nekto.controller.tile.TileEntityBase;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -17,8 +19,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemRemote extends ItemBase {
 	private int frame;
 
-	public ItemRemote(int id) {
-		super(id);
+	public ItemRemote() {
+		super();
 		setUnlocalizedName("remote");
 	}
 
@@ -48,7 +50,7 @@ public class ItemRemote extends ItemBase {
 	}
 
 	@Override
-	protected void onBlockSelected(EntityPlayer player, World world, int id, int par4, int par5, int par6, int meta) {
+	protected void onBlockSelected(EntityPlayer player, World world, Block id, int par4, int par5, int par6, int meta) {
 		((TileEntityAnimator) this.link).setFrame(this.frame);
 		super.onBlockSelected(player, world, id, par4, par5, par6, meta);
 	}
@@ -60,15 +62,15 @@ public class ItemRemote extends ItemBase {
 				this.link.setEditing(false);
 				this.link.setLinker(null);
 				this.link = tempTile;
-				player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_2));
+				player.func_146105_b(new ChatComponentText(MESSAGE_2));
 			}
 			tempTile.setLinker(this);
 			this.frame = ((TileEntityAnimator) tempTile).getFrame();
-			player.sendChatToPlayer(ChatMessageComponent.createFromText(MESSAGE_1 + par4 + ", " + par5 + ", " + par6));
+			player.func_146105_b(new ChatComponentText(MESSAGE_1 + par4 + ", " + par5 + ", " + par6));
 			setEditAndTag(new int[] { par4, par5, par6, this.frame }, stack);
 			return true;
 		} else if (tempTile.getLinker() == this) {
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("Finished frame # " + (this.frame + 1) + " Continuing with frame # " + (this.frame + 2)));
+			player.func_146105_b(new ChatComponentText("Finished frame # " + (this.frame + 1) + " Continuing with frame # " + (this.frame + 2)));
 			this.frame++;
 			setEditAndTag(new int[] { par4, par5, par6, this.frame }, stack);
 			return true;

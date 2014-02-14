@@ -14,7 +14,7 @@ public class CommonProxy implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.func_147438_o(x, y, z);
 		if (tile instanceof TileEntityAnimator)
 			if (ID == GeneralRef.GUI_ID) {
 				return new ContainerAnimator(player.inventory, (TileEntityAnimator) tile, true);
