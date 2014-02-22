@@ -14,11 +14,11 @@ import net.minecraft.world.World;
 public class BlockController extends BlockBase {
 	public BlockController() {
 		super();
-        func_149663_c("controller");
+        setBlockName("controller");
 	}
 
 	@Override
-	public TileEntity func_149915_a(World world, int i) {
+	public TileEntity createTileEntity(World world, int i) {
 		return new TileEntityController();
 	}
 

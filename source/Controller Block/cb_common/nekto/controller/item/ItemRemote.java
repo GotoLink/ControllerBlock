@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -62,15 +61,15 @@ public class ItemRemote extends ItemBase {
 				this.link.setEditing(false);
 				this.link.setLinker(null);
 				this.link = tempTile;
-				player.func_146105_b(new ChatComponentText(MESSAGE_2));
+				player.addChatComponentMessage(new ChatComponentText(MESSAGE_2));
 			}
 			tempTile.setLinker(this);
 			this.frame = ((TileEntityAnimator) tempTile).getFrame();
-			player.func_146105_b(new ChatComponentText(MESSAGE_1 + par4 + ", " + par5 + ", " + par6));
+			player.addChatComponentMessage(new ChatComponentText(MESSAGE_1 + par4 + ", " + par5 + ", " + par6));
 			setEditAndTag(new int[] { par4, par5, par6, this.frame }, stack);
 			return true;
 		} else if (tempTile.getLinker() == this) {
-			player.func_146105_b(new ChatComponentText("Finished frame # " + (this.frame + 1) + " Continuing with frame # " + (this.frame + 2)));
+			player.addChatComponentMessage(new ChatComponentText("Finished frame # " + (this.frame + 1) + " Continuing with frame # " + (this.frame + 2)));
 			this.frame++;
 			setEditAndTag(new int[] { par4, par5, par6, this.frame }, stack);
 			return true;

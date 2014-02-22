@@ -62,8 +62,8 @@ public class PacketHandler {
 			if (data[0] == 4)//This is a full reset
 			{
 				if (data.length > 6)
-					if (player.worldObj.func_147438_o(data[4], data[5], data[6]) instanceof TileEntityAnimator) {
-						animator = (TileEntityAnimator) player.worldObj.func_147438_o(data[4], data[5], data[6]);
+					if (player.worldObj.getTileEntity(data[4], data[5], data[6]) instanceof TileEntityAnimator) {
+						animator = (TileEntityAnimator) player.worldObj.getTileEntity(data[4], data[5], data[6]);
 					}
 				resetAnimator(animator);
 			}

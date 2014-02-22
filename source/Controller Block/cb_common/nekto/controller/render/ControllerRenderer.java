@@ -17,7 +17,7 @@ public class ControllerRenderer implements ISimpleBlockRenderingHandler {
 	@Override
 	public void renderInventoryBlock(Block block, int i, int j, RenderBlocks renderblocks) {
 		if (block instanceof BlockBase) {
-			TileEntityRendererDispatcher.field_147556_a.func_147546_a(TileEntityBase.class).func_147500_a(((BlockBase) block).func_149915_a(Minecraft.getMinecraft().theWorld, 0), 0.0D, 0.0D, 0.0D, 0.0F);
+			TileEntityRendererDispatcher.instance.getSpecialRendererByClass(TileEntityBase.class).renderTileEntityAt(block.createTileEntity(Minecraft.getMinecraft().theWorld, 0), 0.0D, 0.0D, 0.0D, 0.0F);
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		}
 	}

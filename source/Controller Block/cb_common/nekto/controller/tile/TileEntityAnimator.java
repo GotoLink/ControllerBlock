@@ -7,13 +7,11 @@ import java.util.List;
 import cpw.mods.fml.common.registry.GameData;
 import nekto.controller.animator.Mode;
 import nekto.controller.item.ItemRemote;
-import nekto.controller.network.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.Packet;
 
 public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	private int frame = 0, delay = 0, count = 0, max = -1;
@@ -35,8 +33,8 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	}
 
 	@Override
-	public void func_145841_b(NBTTagCompound par1NBTTagCompound) {
-		super.func_145841_b(par1NBTTagCompound);
+	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
+		super.writeToNBT(par1NBTTagCompound);
 		par1NBTTagCompound.setInteger("frame", this.frame);
 		par1NBTTagCompound.setInteger("delay", this.delay);
 		par1NBTTagCompound.setInteger("max", this.max);
@@ -61,8 +59,8 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	}
 
 	@Override
-	public void func_145839_a(NBTTagCompound par1NBTTagCompound) {
-		super.func_145839_a(par1NBTTagCompound);
+	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+		super.readFromNBT(par1NBTTagCompound);
 		int length = par1NBTTagCompound.getInteger("length");
 		this.frame = par1NBTTagCompound.getInteger("frame");
 		this.delay = par1NBTTagCompound.getInteger("delay");
@@ -71,7 +69,7 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 		this.setMode(Mode.values()[par1NBTTagCompound.getShort("mode")]);
 		this.removed = par1NBTTagCompound.getBoolean("removed");
 		for (int i = 0; i < length; i++) {
-			NBTTagCompound tag = par1NBTTagCompound.func_150295_c("frames", 10).func_150305_b(i);
+			NBTTagCompound tag = par1NBTTagCompound.getTagList("frames", 10).getCompoundTagAt(i);
 			List<Object[]> list = new ArrayList<Object[]>();
 			@SuppressWarnings("unchecked")
 			Iterator<NBTTagIntArray> itr = tag.func_150296_c().iterator();
@@ -89,7 +87,7 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	}
 
     @Override
-    public String func_145825_b() {
+    public String getInventoryName() {
         return "Animator.inventory";
     }
 

@@ -14,7 +14,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
 public abstract class TileEntityBase<e> extends TileEntity implements IInventory {
@@ -31,7 +30,7 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	}
 
 	@Override
-	public void func_145845_h() {
+	public void updateEntity() {
 		this.hoverHeight += 3;
 		this.orbRotation += 3;
 		if (this.orbRotation > 360) {
@@ -92,9 +91,9 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 
 	private void sendMessage(EntityPlayer player, boolean removed, Object[] data) {
 		if (removed) {
-			player.func_146105_b(new ChatComponentText("Removed " + dataAsString(data) + " from " + getListName()));
+			player.addChatComponentMessage(new ChatComponentText("Removed " + dataAsString(data) + " from " + getListName()));
 		} else {
-			player.func_146105_b(new ChatComponentText("Added " + dataAsString(data) + " to " + getListName()));
+			player.addChatComponentMessage(new ChatComponentText("Added " + dataAsString(data) + " to " + getListName()));
 		}
 	}
 
@@ -105,7 +104,7 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	 * @return
 	 */
 	private static String dataAsString(Object[] data) {
-		return ((Block)data[0]).func_149739_a().substring(5) + data[4] + " [" + data[1] + "," + data[2] + "," + data[3] + "] ";
+		return ((Block)data[0]).getLocalizedName() + data[4] + " [" + data[1] + "," + data[2] + "," + data[3] + "] ";
 	}
 
 	protected String getListName() {
@@ -145,8 +144,8 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	}
 
 	@Override
-	public void func_145841_b(NBTTagCompound par1NBTTagCompound) {
-		super.func_145841_b(par1NBTTagCompound);
+	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
+		super.writeToNBT(par1NBTTagCompound);
 		par1NBTTagCompound.setInteger("length", getBaseList().size());
 		par1NBTTagCompound.setBoolean("active", this.previousState);
 		par1NBTTagCompound.setBoolean("edit", this.isEditing());
@@ -163,15 +162,15 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	}
 
 	@Override
-	public void func_145839_a(NBTTagCompound par1NBTTagCompound) {
-		super.func_145839_a(par1NBTTagCompound);
+	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+		super.readFromNBT(par1NBTTagCompound);
 		this.previousState = par1NBTTagCompound.getBoolean("active");
 		this.setEditing(par1NBTTagCompound.getBoolean("edit"));
 		this.getBaseList().clear();
-		NBTTagList list = par1NBTTagCompound.func_150295_c("Items", 10);
+		NBTTagList list = par1NBTTagCompound.getTagList("Items", 10);
 		this.items = new ItemStack[this.getSizeInventory()];
 		for (int i = 0; i < list.tagCount(); ++i) {
-			NBTTagCompound compound = list.func_150305_b(i);
+			NBTTagCompound compound = list.getCompoundTagAt(i);
 			int j = compound.getByte("Slot") & 255;
 			if (j >= 0 && j < this.items.length) {
 				this.items[j] = ItemStack.loadItemStackFromNBT(compound);
@@ -196,13 +195,13 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 			if (aitemstack[i].stackSize <= j) {
 				ItemStack itemstack = aitemstack[i];
 				aitemstack[i] = null;
-				onInventoryChanged();
+				markDirty();
 				return itemstack;
 			}
 			ItemStack itemstack1 = aitemstack[i].splitStack(j);
 			if (aitemstack[i].stackSize == 0)
 				aitemstack[i] = null;
-			onInventoryChanged();
+			markDirty();
 			return itemstack1;
 		} else
 			return null;
@@ -216,11 +215,11 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		items[i] = itemstack;
-		onInventoryChanged();
+		markDirty();
 	}
 
 	@Override
-	public boolean func_145818_k_() {
+	public boolean hasCustomInventoryName() {
 		return false;
 	}
 
@@ -231,15 +230,15 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return entityplayer.isDead ? false : entityplayer.getDistanceSq(field_145851_c, field_145848_d, field_145849_e) <= 64D;
+		return entityplayer.isDead ? false : entityplayer.getDistanceSq(xCoord, yCoord, zCoord) <= 64D;
 	}
 
 	@Override
-	public void openChest() {
+	public void openInventory() {
 	}
 
 	@Override
-	public void closeChest() {
+	public void closeInventory() {
 	}
 
 	/**

@@ -10,9 +10,9 @@ public class DescriptionPacket implements IMessage {
     public short mode;
     public DescriptionPacket(){}
     public DescriptionPacket(TileEntityAnimator animator){
-        this.data[0] = animator.field_145851_c;
-        this.data[1] = animator.field_145848_d;
-        this.data[2] = animator.field_145849_e;
+        this.data[0] = animator.xCoord;
+        this.data[1] = animator.yCoord;
+        this.data[2] = animator.zCoord;
         this.edit = animator.isEditing();
         this.data[3] = animator.getFrame();
         this.data[4] = animator.getMaxFrame();

@@ -19,20 +19,20 @@ import net.minecraft.world.World;
 public class BlockAnimator extends BlockBase {
 	public BlockAnimator() {
 		super();
-        func_149663_c("animator");
+        setBlockName("animator");
 	}
 
 	@Override
-	public TileEntity func_149915_a(World world, int i) {
+	public TileEntity createTileEntity(World world, int i) {
 		return new TileEntityAnimator();
 	}
 
 	@Override
-	public boolean func_149727_a(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
 		if (par5EntityPlayer.getCurrentEquippedItem() == null || !(par5EntityPlayer.getCurrentEquippedItem().getItem() instanceof ItemRemote)) {
 			if (!par1World.isBlockIndirectlyGettingPowered(par2, par3, par4))//We don't want to enable any changes when block is powered
 			{
-				if (par1World.func_147438_o(par2, par3, par4) instanceof TileEntityAnimator)
+				if (par1World.getTileEntity(par2, par3, par4) instanceof TileEntityAnimator)
 					par5EntityPlayer.openGui(Controller.instance, GeneralRef.GUI_ID, par1World, par2, par3, par4);
 				return true;
 			}
@@ -53,13 +53,13 @@ public class BlockAnimator extends BlockBase {
 	}
 
 	@Override
-	public int func_149738_a(World par1World) {
+	public int tickRate(World par1World) {
 		return 2;
 	}
 
 	@Override
-	public void func_149674_a(World par1World, int par2, int par3, int par4, Random par5Random) {
-		TileEntityAnimator tile = (TileEntityAnimator) par1World.func_147438_o(par2, par3, par4);
+	public void updateTick(World par1World, int par2, int par3, int par4, Random par5Random) {
+		TileEntityAnimator tile = (TileEntityAnimator) par1World.getTileEntity(par2, par3, par4);
 		//FMLLog.getLogger().info(tile.getDelay()+" ticked "+tile.getFrame());//DEBUG
 		boolean flag = par1World.isBlockIndirectlyGettingPowered(par2, par3, par4);
 		if (!(tile.isWaiting() && flag))
@@ -67,7 +67,7 @@ public class BlockAnimator extends BlockBase {
 				if (tile.getFrame() < tile.getBaseList().size())
 					previousFrame(par1World, tile);
 				nextFrame(par1World, tile);
-				par1World.func_147464_a(par2, par3, par4, this, this.func_149738_a(par1World) + tile.getDelay());//Here we loop the ticks
+				par1World.scheduleBlockUpdate(par2, par3, par4, this, this.tickRate(par1World) + tile.getDelay());//Here we loop the ticks
 				tile.setCount(tile.getCount() + 1);
 			}
 		if (!flag && tile.getFrame() == 0)
@@ -136,7 +136,7 @@ public class BlockAnimator extends BlockBase {
 			}
 		}
 		if (powered || ((TileEntityAnimator) tile).getFrame() != 0)
-			par1World.func_147464_a(par2, par3, par4, this, this.func_149738_a(par1World) + ((TileEntityAnimator) tile).getDelay());
+			par1World.scheduleBlockUpdate(par2, par3, par4, this, this.tickRate(par1World) + ((TileEntityAnimator) tile).getDelay());
         PacketHandler.sendDescription((TileEntityAnimator)tile, par1World);
 	}
 }

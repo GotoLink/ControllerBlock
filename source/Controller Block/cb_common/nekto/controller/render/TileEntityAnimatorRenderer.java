@@ -24,12 +24,12 @@ public class TileEntityAnimatorRenderer extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void func_147500_a(TileEntity tileEntity, double x, double y, double z, float scale) {
+	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float scale) {
 		GL11.glPushMatrix();
-		setLighting(Minecraft.getMinecraft().theWorld, tileEntity.field_145851_c, tileEntity.field_145848_d, tileEntity.field_145849_e, Controller.animator);
+		setLighting(Minecraft.getMinecraft().theWorld, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, Controller.animator);
 		GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 		//bindTextureByName(GeneralRef.FULL_TEXTURE_PATH+((TileEntityBase)tileEntity).getTexture());
-        func_147499_a(new ResourceLocation(GeneralRef.FULL_TEXTURE_PATH + ((TileEntityBase<?>) tileEntity).getTexture()));
+        bindTexture(new ResourceLocation(GeneralRef.FULL_TEXTURE_PATH + ((TileEntityBase<?>) tileEntity).getTexture()));
 		GL11.glPushMatrix();
 		GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
 		this.model.render(0.0625F);

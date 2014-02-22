@@ -22,8 +22,8 @@ public class TileEntityController extends TileEntityBase<Object[]> {
 	}
 
 	@Override
-	public void func_145841_b(NBTTagCompound par1NBTTagCompound) {
-		super.func_145841_b(par1NBTTagCompound);
+	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
+		super.writeToNBT(par1NBTTagCompound);
         Object[] objects;
         int[] data;
 		for (int index = 0; index < getBaseList().size(); index++) {
@@ -36,8 +36,8 @@ public class TileEntityController extends TileEntityBase<Object[]> {
 	}
 
 	@Override
-	public void func_145839_a(NBTTagCompound par1NBTTagCompound) {
-		super.func_145839_a(par1NBTTagCompound);
+	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+		super.readFromNBT(par1NBTTagCompound);
 		int count = par1NBTTagCompound.getInteger("length");
         Object[] objects;
         int[] data;
@@ -51,7 +51,7 @@ public class TileEntityController extends TileEntityBase<Object[]> {
 	}
 
 	@Override
-	public String func_145825_b() {
+	public String getInventoryName() {
 		return "Controller.inventory";
 	}
 

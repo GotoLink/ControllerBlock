@@ -25,7 +25,7 @@ public class RemoteKeyHandler {
 
     @SubscribeEvent
 	public void keyDown(InputEvent.KeyInputEvent event) {
-		if (keyBind.func_151470_d()) {
+		if (keyBind.getIsKeyPressed()) {
 			if (Minecraft.getMinecraft().currentScreen == null) {
 				EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
 				if (player != null) {

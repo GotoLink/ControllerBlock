@@ -30,7 +30,7 @@ public class DescriptionHandler {
         int x = packet.data[0];
         int y = packet.data[1];
         int z = packet.data[2];
-        TileEntity te = Minecraft.getMinecraft().theWorld.func_147438_o(x, y, z);
+        TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(x, y, z);
         if (te instanceof TileEntityAnimator) {
             TileEntityAnimator animator = (TileEntityAnimator) te;
             animator.setEditing(packet.edit);

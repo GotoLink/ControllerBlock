@@ -26,7 +26,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tile = world.func_147438_o(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile instanceof TileEntityAnimator)
 			if (ID == GeneralRef.GUI_ID) {
 				return new AnimatorGUI(player.inventory, (TileEntityAnimator) tile, false);

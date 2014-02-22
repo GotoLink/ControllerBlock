@@ -17,7 +17,7 @@ public class GuiChangeHandler {
         GuiChangePacket packet = new GuiChangePacket();
         packet.fromBytes(event.packet.payload());
         if(packet.data.length>=4){
-            handleGuiChange(packet, ((NetHandlerPlayServer) event.handler).field_147369_b);
+            handleGuiChange(packet, ((NetHandlerPlayServer) event.handler).playerEntity);
         }
     }
 
@@ -25,7 +25,7 @@ public class GuiChangeHandler {
      * Server method to handle a client action in AnimatorGUI or RemoteKeyHandler
      */
     private static void handleGuiChange(GuiChangePacket packet, EntityPlayer player) {
-        TileEntity tile = player.worldObj.func_147438_o(packet.data[1], packet.data[2], packet.data[3]);
+        TileEntity tile = player.worldObj.getTileEntity(packet.data[1], packet.data[2], packet.data[3]);
         if (tile instanceof TileEntityAnimator) {
             if (packet.data[0] >= 0)//From AnimatorGUI
             {
