@@ -35,7 +35,6 @@ public abstract class BlockBase extends Block {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public boolean isOpaqueCube() {
 		return false;
 	}

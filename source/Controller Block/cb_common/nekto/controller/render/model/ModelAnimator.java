@@ -2,7 +2,7 @@ package nekto.controller.render.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-
+@Deprecated()
 public class ModelAnimator extends ModelBase {
 	//fields
 	ModelRenderer Top;
