@@ -9,7 +9,7 @@
   "mcversion": $mcversion,
   "url": "",
   "updateUrl": "",
-  "authors": ["Controller Block Mod Team"],
+  "authorList": ["Controller Block Mod Team"],
   "parent":"",
   "screenshots": [],
   "dependencies": []
