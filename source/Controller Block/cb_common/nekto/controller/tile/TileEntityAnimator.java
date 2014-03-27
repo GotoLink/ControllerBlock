@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.Constants;
 
 public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	private int frame = 0, delay = 0, count = 0, max = -1;
@@ -48,10 +49,12 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
             int[] data;
 			for (int block = 0; block < getBaseList().get(index).size(); block++) {
                 objects = getBaseList().get(index).get(block);
-                data = new int[objects.length];
-                System.arraycopy(objects, 1, data, 1, objects.length-1);
-                data[0] = GameData.blockRegistry.getId((Block) objects[0]);
-				tag.setIntArray(Integer.toString(block), data);
+                if(objects!=null){
+                    data = new int[objects.length];
+                    System.arraycopy(objects, 1, data, 1, objects.length-1);
+                    data[0] = GameData.blockRegistry.getId((Block) objects[0]);
+                    tag.setIntArray(Integer.toString(block), data);
+                }
 			}
 			tags.appendTag(tag);
 		}
@@ -69,7 +72,7 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 		this.setMode(Mode.values()[par1NBTTagCompound.getShort("mode")]);
 		this.removed = par1NBTTagCompound.getBoolean("removed");
 		for (int i = 0; i < length; i++) {
-			NBTTagCompound tag = par1NBTTagCompound.getTagList("frames", 10).getCompoundTagAt(i);
+			NBTTagCompound tag = par1NBTTagCompound.getTagList("frames", Constants.NBT.TAG_COMPOUND).getCompoundTagAt(i);
 			List<Object[]> list = new ArrayList<Object[]>();
 			@SuppressWarnings("unchecked")
 			Iterator<NBTTagIntArray> itr = tag.func_150296_c().iterator();
@@ -77,10 +80,12 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
             Object[] objects;
 			while (itr.hasNext()){
                 data = itr.next().func_150302_c();
-                objects = new Object[data.length];
-                objects[0] = GameData.blockRegistry.get(data[0]);
-                System.arraycopy(data, 1, objects, 1, data.length-1);
-				list.add(objects);
+                if(data!=null){
+                    objects = new Object[data.length];
+                    objects[0] = GameData.blockRegistry.get(data[0]);
+                    System.arraycopy(data, 1, objects, 1, data.length-1);
+                    list.add(objects);
+                }
             }
 			this.getBaseList().add(list);
 		}

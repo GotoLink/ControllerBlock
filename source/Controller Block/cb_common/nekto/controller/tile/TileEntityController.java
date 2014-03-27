@@ -28,10 +28,12 @@ public class TileEntityController extends TileEntityBase<Object[]> {
         int[] data;
 		for (int index = 0; index < getBaseList().size(); index++) {
             objects = getBaseList().get(index);
-            data = new int[objects.length];
-            System.arraycopy(objects, 1, data, 1, objects.length-1);
-            data[0] = GameData.blockRegistry.getId((Block) objects[0]);
-			par1NBTTagCompound.setIntArray(Integer.toString(index), data);
+            if(objects!=null){
+                data = new int[objects.length];
+                System.arraycopy(objects, 1, data, 1, objects.length-1);
+                data[0] = GameData.blockRegistry.getId((Block) objects[0]);
+			    par1NBTTagCompound.setIntArray(Integer.toString(index), data);
+            }
 		}
 	}
 
@@ -43,10 +45,12 @@ public class TileEntityController extends TileEntityBase<Object[]> {
         int[] data;
 		for (int i = 0; i < count; i++) {
             data = par1NBTTagCompound.getIntArray(Integer.toString(i));
-            objects = new Object[data.length];
-            objects[0] = GameData.blockRegistry.get(data[0]);
-            System.arraycopy(data, 1, objects, 1, data.length-1);
-			this.getBaseList().add(objects);
+            if(data.length>0){
+                objects = new Object[data.length];
+                objects[0] = GameData.blockRegistry.get(data[0]);
+                System.arraycopy(data, 1, objects, 1, data.length-1);
+                this.getBaseList().add(objects);
+            }
 		}
 	}
 
