@@ -47,13 +47,12 @@ public class Controller {
 				'W', Blocks.crafting_table);
 		GameRegistry.addRecipe(new ItemStack(remote), "D", "I", "I", 'D', Items.diamond, 'I', Items.iron_ingot);
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
+        animatorDesc = NetworkRegistry.INSTANCE.newEventDrivenChannel(GeneralRef.DESC_CHANNEL);
+        guiChange = NetworkRegistry.INSTANCE.newEventDrivenChannel(GeneralRef.GUI_CHANNEL);
         if(event.getSide().isClient()){
-            animatorDesc = NetworkRegistry.INSTANCE.newEventDrivenChannel(GeneralRef.DESC_CHANNEL);
             animatorDesc.register(new DescriptionHandler());
-        }else{
-            guiChange = NetworkRegistry.INSTANCE.newEventDrivenChannel(GeneralRef.GUI_CHANNEL);
-            guiChange.register(new GuiChangeHandler());
         }
+        guiChange.register(new GuiChangeHandler());
 		GameRegistry.registerTileEntity(TileEntityController.class, "controllerBlockList");
 		GameRegistry.registerTileEntity(TileEntityAnimator.class, "animatorBlockList");
 		proxy.registerRenderThings();
