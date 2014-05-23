@@ -1,0 +1,16 @@
+tile.animator.name=Аниматор
+tile.controller.name=Контроллер
+item.linker.name=Соединитель
+item.remote.name=Пульт
+
+remote.control.key=Управление пультом
+
+chat.item.message1=не соединён
+chat.item.message2=Соединён с
+chat.item.message3=Отсоединён от
+chat.item.message4=уже соединён к другому
+chat.item.message5.part1=ПКМ по
+chat.item.message5.part2=блоку, чтобы начать соединение
+chat.item.message6=Добавлен первый угол в выбор
+chat.item.message7=Выбор завершён
+chat.item.message8=Удалён угол из выбора
