@@ -5,6 +5,7 @@ item.linker.name=Linker
 item.remote.name=Remote
 
 remote.control.key=Remote Control Key
+key.categories.item.special=Special Item Keys
 
 chat.item.message1=is not connected
 chat.item.message2=Linked to
