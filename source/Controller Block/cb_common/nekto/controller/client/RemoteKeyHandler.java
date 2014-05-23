@@ -3,12 +3,10 @@ package nekto.controller.client;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
-import nekto.controller.core.Controller;
 import nekto.controller.item.ItemBase;
 import nekto.controller.item.ItemRemote;
 import nekto.controller.network.GuiChangePacket;
 import nekto.controller.network.PacketHandler;
-import nekto.controller.ref.GeneralRef;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
@@ -17,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 
 public class RemoteKeyHandler {
-	public static final KeyBinding keyBind = new KeyBinding("remote.control.key", Keyboard.KEY_R, "item.special");
+	public static final KeyBinding keyBind = new KeyBinding("remote.control.key", Keyboard.KEY_R, "key.categories.item.special");
 
     public RemoteKeyHandler(){
         ClientRegistry.registerKeyBinding(keyBind);

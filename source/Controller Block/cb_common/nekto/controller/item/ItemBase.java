@@ -67,9 +67,8 @@ public abstract class ItemBase extends Item {
 					tempTile = (TileEntityBase<?>) world.getTileEntity(i, j, k);
 				}
 				if (itemStack.hasTagCompound() && itemStack.stackTagCompound.hasKey(KEYTAG)) {
-					int[] pos = null;
 					if (this.link == null) {
-						pos = itemStack.getTagCompound().getIntArray(KEYTAG);
+						int[] pos = itemStack.getTagCompound().getIntArray(KEYTAG);
 						//Try to find the old controller block to set its linker
 						if (isController(pos[0], pos[1], pos[2], world)) {
 							setItemVar(world, pos);
@@ -206,7 +205,7 @@ public abstract class ItemBase extends Item {
 	 *            the second selected block position
 	 */
 	private void onMultipleSelection(EntityPlayer player, World world, int[] corner, int[] endCorner) {
-		int temp = 0;
+		int temp;
 		//Sort the corners
 		for (int i = 0; i < corner.length; i++) {
 			if (corner[i] > endCorner[i]) {

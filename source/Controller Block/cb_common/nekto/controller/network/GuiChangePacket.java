@@ -27,7 +27,7 @@ public class GuiChangePacket implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeInt(data.length);
         buf.writeBoolean(remote);
-        for (int id = 0; id < data.length; id++)
-            buf.writeInt(data[id]);
+        for (int id : data)
+            buf.writeInt(id);
     }
 }

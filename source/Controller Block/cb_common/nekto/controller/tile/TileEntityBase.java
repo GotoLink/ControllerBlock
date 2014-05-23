@@ -230,7 +230,7 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return entityplayer.isDead ? false : entityplayer.getDistanceSq(xCoord, yCoord, zCoord) <= 64D;
+		return !entityplayer.isDead && entityplayer.getDistanceSq(xCoord, yCoord, zCoord) <= 64D;
 	}
 
 	@Override

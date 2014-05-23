@@ -42,7 +42,7 @@ public class BlockAnimator extends BlockBase {
 
 	@Override
 	protected void dropItems(World world, TileEntityBase<?> tile, Iterator<?> itr, int par2, int par3, int par4) {
-		List<Object[]> frames = null;
+		List<Object[]> frames;
 		int index = 0;
 		while (itr.hasNext()) {
 			frames = (List<Object[]>) itr.next();

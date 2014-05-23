@@ -11,7 +11,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerAnimator extends ContainerBase {
 	private int oldDelay, oldMode, oldFrame, oldMax = -1;
-	private boolean isRemote, corner;
+	private final boolean isRemote;
+    private boolean corner;
 	private ItemBase remote;
 	private final static int DELAY_INDEX = 0, MODE_INDEX = 1, FRAME_INDEX = 2, MAX_INDEX = 3, CORNER_INDEX = 4;
 

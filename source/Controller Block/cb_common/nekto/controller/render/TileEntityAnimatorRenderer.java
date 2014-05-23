@@ -1,10 +1,8 @@
 package nekto.controller.render;
 
-import nekto.controller.core.Controller;
 import nekto.controller.ref.GeneralRef;
 import nekto.controller.render.model.ModelAnimator2;
 import nekto.controller.tile.TileEntityBase;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -26,7 +24,7 @@ public class TileEntityAnimatorRenderer extends TileEntitySpecialRenderer {
 	@Override
 	public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float scale) {
 		GL11.glPushMatrix();
-		setLighting(Minecraft.getMinecraft().theWorld, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, Controller.animator);
+		setLighting(Minecraft.getMinecraft().theWorld, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
 		GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         bindTexture(new ResourceLocation(GeneralRef.FULL_TEXTURE_PATH + ((TileEntityBase<?>) tileEntity).getTexture()));
 		GL11.glPushMatrix();
@@ -44,7 +42,7 @@ public class TileEntityAnimatorRenderer extends TileEntitySpecialRenderer {
 		this.model.renderOrb(0.0625F);
 	}
 
-	public void setLighting(World world, int i, int j, int k, Block block) {
+	public void setLighting(World world, int i, int j, int k) {
 		Tessellator tessellator = Tessellator.instance;
 		float f = world.getLightBrightness(i, j, k);
 		int l = world.getLightBrightnessForSkyBlocks(i, j, k, 0);

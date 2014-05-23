@@ -30,8 +30,8 @@ public class DescriptionPacket implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        for(int i = 0; i<data.length; i++)
-            buf.writeInt(data[i]);
+        for(int i:data)
+            buf.writeInt(i);
         buf.writeBoolean(edit);
         buf.writeShort(mode);
     }

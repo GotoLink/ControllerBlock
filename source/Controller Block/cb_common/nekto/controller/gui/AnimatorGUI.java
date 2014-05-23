@@ -21,7 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class AnimatorGUI extends GuiContainer {
-	private boolean remote;
+	private final boolean remote;
 
 	public AnimatorGUI(InventoryPlayer par1InventoryPlayer, TileEntityAnimator par2TileEntity, boolean isRemote) {
 		super(new ContainerAnimator(par1InventoryPlayer, par2TileEntity, !isRemote));
@@ -116,21 +116,19 @@ public class AnimatorGUI extends GuiContainer {
 		default:
 			break;
 		}
-        GuiChangePacket packet = null;
+        GuiChangePacket packet;
         if (data != null) {
 			int[] cData = new int[4 + data.length];
 			cData[0] = guibutton.id;
 			cData[1] = animator.xCoord;
 			cData[2] = animator.yCoord;
 			cData[3] = animator.zCoord;
-			for (int i = 0; i < data.length; i++)
-				cData[i + 4] = data[i];
+            System.arraycopy(data, 0, cData, 4, data.length);
 			packet = new GuiChangePacket(remote, cData);
 		} else {
 			packet = new GuiChangePacket(remote, guibutton.id, animator.xCoord, animator.yCoord, animator.zCoord);
 		}
-		if (packet != null)
-            PacketHandler.sendGuiChange(packet);
+        PacketHandler.sendGuiChange(packet);
 		refreshButtonsText();
 	}
 }
