@@ -36,7 +36,7 @@ public abstract class ItemBase extends Item {
 	public ItemBase() {
 		super();
 		setMaxStackSize(1);
-		setCreativeTab(CreativeTabs.tabBlock);
+		setCreativeTab(CreativeTabs.tabRedstone);
 	}
 
 	@Override

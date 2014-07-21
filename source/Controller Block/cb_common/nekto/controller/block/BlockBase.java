@@ -20,7 +20,7 @@ public abstract class BlockBase extends Block {
 
 	protected BlockBase() {
 		super(Material.rock);
-        setCreativeTab(CreativeTabs.tabBlock);
+        setCreativeTab(CreativeTabs.tabRedstone);
 	}
 
     @Override
