@@ -9,7 +9,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
@@ -21,6 +23,7 @@ public abstract class BlockBase extends Block {
 	protected BlockBase() {
 		super(Material.rock);
         setCreativeTab(CreativeTabs.tabRedstone);
+        setLightOpacity(1);
 	}
 
     @Override
@@ -56,14 +59,42 @@ public abstract class BlockBase extends Block {
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
-		if (world instanceof World) {
-			if (((World) world).isBlockIndirectlyGettingPowered(x, y, z)) {
-				return 15;
-			} else
-				return 8;
-		} else
-			return super.getLightValue(world, x, y, z);
+        return getBlockPowerInput(world, x, y, z);
 	}
+
+    private int getBlockPowerInput(IBlockAccess world, int x, int y, int z)
+    {
+        int l = Math.max(0, world.isBlockProvidingPowerTo(x, y - 1, z, 0));
+        if (l >= 15){
+            return l;
+        }else{
+            l = Math.max(l, world.isBlockProvidingPowerTo(x, y + 1, z, 1));
+
+            if (l >= 15){
+                return l;
+            }else{
+                l = Math.max(l, world.isBlockProvidingPowerTo(x, y, z - 1, 2));
+
+                if (l >= 15){
+                    return l;
+                }else{
+                    l = Math.max(l, world.isBlockProvidingPowerTo(x, y, z + 1, 3));
+
+                    if (l >= 15){
+                        return l;
+                    }else{
+                        l = Math.max(l, world.isBlockProvidingPowerTo(x - 1, y, z, 4));
+
+                        if (l >= 15){
+                            return l;
+                        }else{
+                            return Math.max(l, world.isBlockProvidingPowerTo(x + 1, y, z, 5));
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
@@ -78,32 +109,11 @@ public abstract class BlockBase extends Block {
 			Iterator<?> itr = tile.getBaseList().iterator();
 			dropItems(world, tile, itr, par2, par3, par4);
 		}
-		ItemBase linker = tile.getLinker();
-		if (linker != null) {
-			linker.resetLinker();
-		}
+        ItemStack link = tile.getLinker();
+        if(link!=null && link.hasTagCompound())
+            link.getTagCompound().removeTag(ItemBase.KEYTAG);
+        tile.setLinker(null);
 		super.breakBlock(world, par2, par3, par4, par5, par6);
-	}
-
-	protected void setUnactiveBlocks(World par1World, Iterator<Object[]> itr) {
-		while (itr.hasNext()) {
-			Object[] block = itr.next();
-			if (block != null && block.length > 4 && par1World.getBlock((Integer) block[1], (Integer) block[2], (Integer) block[3]) != block[0]) {
-				par1World.setBlock((Integer) block[1], (Integer) block[2], (Integer) block[3], (Block) block[0], (Integer) block[4], 3);
-			}
-		}
-	}
-
-	protected void setActiveBlocks(World par1World, Iterator<Object[]> itr) {
-		while (itr.hasNext()) {
-			Object[] block = itr.next();
-			if (block != null && block.length > 4) {
-				if (par1World.getBlock((Integer) block[1], (Integer) block[2], (Integer) block[3]) != block[0])
-					itr.remove();
-				else
-					par1World.setBlockToAir((Integer) block[1], (Integer) block[2], (Integer) block[3]);
-			}
-		}
 	}
 
 	protected void dropItems(World world, TileEntityBase<?> tile, Iterator<?> itr, int par2, int par3, int par4) {
@@ -117,16 +127,8 @@ public abstract class BlockBase extends Block {
 		}
 	}
 
-	@Override
-	public void onNeighborBlockChange(World par1World, int par2, int par3, int par4, Block par5) {
-		TileEntityBase<?> tile = (TileEntityBase<?>) par1World.getTileEntity(par2, par3, par4);
-		boolean flag = par1World.isBlockIndirectlyGettingPowered(par2, par3, par4);
-		if (tile.previousState != flag) {
-			if (tile.getBaseList().size() > 0)
-				onRedstoneChange(par1World, par2, par3, par4, par5, flag, tile);
-			tile.setState(flag);
-		}
-	}
-
-	protected abstract void onRedstoneChange(World par1World, int par2, int par3, int par4, Block par5, boolean powered, TileEntityBase<?> tile);
+    @Override
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block neighbour){
+        world.markBlockForUpdate(x, y, z);
+    }
 }

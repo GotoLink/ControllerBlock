@@ -3,6 +3,7 @@
  */
 package nekto.controller.tile;
 
+import java.util.Iterator;
 import java.util.List;
 
 import cpw.mods.fml.common.registry.GameData;
@@ -13,13 +14,22 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class TileEntityController extends TileEntityBase<Object[]> {
 	public TileEntityController() {
-		super(2);
+		super(0);
 	}
 
 	@Override
 	protected List<Object[]> getBlockList() {
 		return getBaseList();
 	}
+
+    @Override
+    protected void onRedstoneChange(){
+        if (isPowered()) {
+            setActiveBlocks(getBlockList().iterator());
+        } else {
+            setUnactiveBlocks(getBlockList().iterator());
+        }
+    }
 
 	@Override
 	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
@@ -30,8 +40,10 @@ public class TileEntityController extends TileEntityBase<Object[]> {
             objects = getBaseList().get(index);
             if(objects!=null){
                 data = new int[objects.length];
-                System.arraycopy(objects, 1, data, 1, objects.length-1);
-                data[0] = GameData.blockRegistry.getId((Block) objects[0]);
+                for(int i = 1; i < objects.length; i++){
+                    data[i] = (Integer) objects[i];
+                }
+                data[0] = GameData.getBlockRegistry().getId((Block) objects[0]);
 			    par1NBTTagCompound.setIntArray(Integer.toString(index), data);
             }
 		}
@@ -43,12 +55,14 @@ public class TileEntityController extends TileEntityBase<Object[]> {
 		int count = par1NBTTagCompound.getInteger("length");
         Object[] objects;
         int[] data;
-		for (int i = 0; i < count; i++) {
-            data = par1NBTTagCompound.getIntArray(Integer.toString(i));
+		for (int index = 0; index < count; index++) {
+            data = par1NBTTagCompound.getIntArray(Integer.toString(index));
             if(data.length>0){
                 objects = new Object[data.length];
-                objects[0] = GameData.blockRegistry.get(data[0]);
-                System.arraycopy(data, 1, objects, 1, data.length-1);
+                objects[0] = GameData.getBlockRegistry().getObjectById(data[0]);
+                for(int i = 1; i < objects.length; i++){
+                    objects[i] = data[i];
+                }
                 this.getBaseList().add(objects);
             }
 		}

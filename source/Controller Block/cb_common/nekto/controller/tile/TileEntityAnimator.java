@@ -7,21 +7,116 @@ import java.util.List;
 import cpw.mods.fml.common.registry.GameData;
 import nekto.controller.animator.Mode;
 import nekto.controller.item.ItemRemote;
+import nekto.controller.network.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	private int frame = 0, delay = 0, count = 0, max = -1;
 	private Mode currMode = Mode.ORDER;
 	private boolean removed;
+    private int timing = -1;
 
 	public TileEntityAnimator() {
 		super(1);
 	}
+
+    @Override
+    public void tick(){
+        if(timing<0)
+            return;
+        if(timing<2+getDelay()){
+            timing++;
+            return;
+        }
+        resetTime();
+        if (!(isWaiting() && isPowered()))
+            if (isPowered() || getFrame() != 0) {
+                if (getFrame() < getBaseList().size())
+                    previousFrame();
+                nextFrame();
+                setCount(getCount() + 1);
+            }
+        if (!isPowered() && getFrame() == 0) {
+            setCount(0);
+            timing=-1;
+        }
+    }
+
+    private void resetTime(){
+        timing = 0;
+    }
+
+    private void nextFrame() {
+        switch (getMode()) {
+            case LOOP:
+                if (getFrame() + 1 >= getBaseList().size())
+                    setFrame(0);
+                else
+                    setFrame(getFrame() + 1);
+                break;
+            case RANDOM:
+                setFrame(worldObj.rand.nextInt(getBaseList().size()));
+                break;
+            case ORDER:
+                if (getFrame() + 1 >= getBaseList().size()) {
+                    setFrame(getFrame() - 1);
+                    setMode(Mode.REVERSE);
+                } else
+                    setFrame(getFrame() + 1);
+                break;
+            case REVERSE:
+                if (getFrame() == 0) {
+                    setFrame(1);
+                    setMode(Mode.ORDER);
+                } else
+                    setFrame(getFrame() - 1);
+                break;
+        }
+        Iterator<Object[]> itr = getBaseList().get(getFrame()).listIterator();//build next frame
+        setUnactiveBlocks(itr);
+    }
+
+    private void previousFrame() {
+        Iterator<Object[]> oldItr = getBaseList().get(getFrame()).listIterator();//erase previous frame
+        setActiveBlocks(oldItr);
+    }
+
+    @Override
+    public void onRedstoneChange() {
+        if (isPowered())//Powered but previously not powered
+        {
+            if (!hasRemoved()) {
+                for (int frame = 0; frame < getBaseList().size(); frame++) {
+                    if (getFrame() != frame) {
+                        Iterator<Object[]> itr = getBaseList().get(frame).listIterator();
+                        setActiveBlocks(itr);
+                    }
+                }
+                setRemoved(true);
+            }
+            timing = 0;
+        } else//Not powered but previously powered
+        {
+            if (getMode() == Mode.ORDER || getMode() == Mode.LOOP)
+                setMode(Mode.REVERSE);
+            else if (getMode() != Mode.REVERSE) {
+                for (int frame = 0; frame < getBaseList().size(); frame++) {
+                    Iterator<Object[]> itr = getBaseList().get(frame).listIterator();
+                    setUnactiveBlocks(itr);//Make all the blocks reappear
+                }
+                setRemoved(false);
+                setFrame(0);
+            }
+        }
+        resetTime();
+        PacketHandler.sendDescription(this, this.worldObj);
+    }
 
 	@Override
 	protected List<Object[]> getBlockList() {
@@ -51,8 +146,10 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
                 objects = getBaseList().get(index).get(block);
                 if(objects!=null){
                     data = new int[objects.length];
-                    System.arraycopy(objects, 1, data, 1, objects.length-1);
-                    data[0] = GameData.blockRegistry.getId((Block) objects[0]);
+                    for(int i = 1; i < objects.length; i++){
+                        data[i] = (Integer) objects[i];
+                    }
+                    data[0] = GameData.getBlockRegistry().getId((Block) objects[0]);
                     tag.setIntArray(Integer.toString(block), data);
                 }
 			}
@@ -71,19 +168,22 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 		this.count = par1NBTTagCompound.getInteger("count");
 		this.setMode(Mode.values()[par1NBTTagCompound.getShort("mode")]);
 		this.removed = par1NBTTagCompound.getBoolean("removed");
+        this.timing = isPowered() && this.timing < 0 ? 0 : -1;
 		for (int i = 0; i < length; i++) {
 			NBTTagCompound tag = par1NBTTagCompound.getTagList("frames", Constants.NBT.TAG_COMPOUND).getCompoundTagAt(i);
 			List<Object[]> list = new ArrayList<Object[]>();
 			@SuppressWarnings("unchecked")
-			Iterator<NBTTagIntArray> itr = tag.func_150296_c().iterator();
+			Iterator<String> itr = tag.func_150296_c().iterator();
             int[] data;
             Object[] objects;
 			while (itr.hasNext()){
-                data = itr.next().func_150302_c();
+                data = tag.getIntArray(itr.next());
                 if(data!=null){
                     objects = new Object[data.length];
-                    objects[0] = GameData.blockRegistry.get(data[0]);
-                    System.arraycopy(data, 1, objects, 1, data.length-1);
+                    objects[0] = GameData.getBlockRegistry().getObjectById(data[0]);
+                    for(int j = 1; j < objects.length; j++){
+                        objects[j] = data[j];
+                    }
                     list.add(objects);
                 }
             }
@@ -106,8 +206,7 @@ public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	}
 
 	/**
-	 * @return the number of ticks (minus 2) between scheduled updates in
-	 *         {@link nekto.controller.block.BlockAnimator} ie, between frames
+	 * @return the number of ticks (minus 2) between updates in #tick() ie, between frames
 	 */
 	public int getDelay() {
 		return this.delay;

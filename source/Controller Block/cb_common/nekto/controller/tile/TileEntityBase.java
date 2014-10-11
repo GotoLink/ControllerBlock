@@ -18,9 +18,9 @@ import net.minecraft.world.World;
 
 public abstract class TileEntityBase<e> extends TileEntity implements IInventory {
 	private ItemStack[] items;
-	public boolean previousState = false;
+	private boolean previousState = false;
 	private List<e> baseList;
-	private ItemBase linker = null;
+	private ItemStack linker = null;
 	private boolean editing;
 	private float orbRotation = 0, hoverHeight = 0;
 
@@ -31,12 +31,26 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 
 	@Override
 	public void updateEntity() {
-		this.hoverHeight += 3;
-		this.orbRotation += 3;
-		if (this.orbRotation > 360) {
-			this.orbRotation -= 360;
-		}
+        if(!worldObj.isRemote){
+            if (getBaseList().size() > 0) {
+                boolean powered = worldObj.getBlockPowerInput(xCoord, yCoord, zCoord) > 0;
+                if (powered != isPowered()) {
+                    setState(powered);
+                    onRedstoneChange();
+                } else {
+                    tick();
+                }
+            }
+        }else{
+            this.hoverHeight += 3;
+            this.orbRotation += 3;
+            if (this.orbRotation > 360) {
+                this.orbRotation -= 360;
+            }
+        }
 	}
+
+    public void tick(){}
 
 	public float getRotation() {
 		return this.orbRotation;
@@ -127,11 +141,11 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 		this.baseList = baseList;
 	}
 
-	public void setLinker(ItemBase par1Linker) {
+	public void setLinker(ItemStack par1Linker) {
 		this.linker = par1Linker;
 	}
 
-	public ItemBase getLinker() {
+	public ItemStack getLinker() {
 		return this.linker;
 	}
 
@@ -142,6 +156,27 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	public void setEditing(boolean b) {
 		this.editing = b;
 	}
+
+    protected void setUnactiveBlocks(Iterator<Object[]> itr) {
+        while (itr.hasNext()) {
+            Object[] block = itr.next();
+            if (block != null && block.length > 4 && worldObj.getBlock((Integer) block[1], (Integer) block[2], (Integer) block[3]) != block[0]) {
+                worldObj.setBlock((Integer) block[1], (Integer) block[2], (Integer) block[3], (Block) block[0], (Integer) block[4], 3);
+            }
+        }
+    }
+
+    protected void setActiveBlocks(Iterator<Object[]> itr) {
+        while (itr.hasNext()) {
+            Object[] block = itr.next();
+            if (block != null && block.length > 4) {
+                if (worldObj.getBlock((Integer) block[1], (Integer) block[2], (Integer) block[3]) != block[0])
+                    itr.remove();
+                else
+                    worldObj.setBlockToAir((Integer) block[1], (Integer) block[2], (Integer) block[3]);
+            }
+        }
+    }
 
 	@Override
 	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
@@ -257,8 +292,12 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	public abstract String getName();
 
 	/**
-	 * List to which blocks are added, as int arrays It isn't saved in NBT by
-	 * this class.
+	 * List to which blocks are added, as int arrays It isn't saved in NBT by this class.
 	 */
 	protected abstract List<Object[]> getBlockList();
+
+    /**
+     * Called when redstone state has changed
+     */
+    protected abstract void onRedstoneChange();
 }
