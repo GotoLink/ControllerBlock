@@ -3,11 +3,14 @@
  */
 package nekto.controller.item;
 
+import nekto.controller.core.Controller;
 import nekto.controller.tile.TileEntityBase;
 import nekto.controller.tile.TileEntityController;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.StatCollector;
 
 public class ItemLinker extends ItemBase {
 	public ItemLinker() {
@@ -22,28 +25,18 @@ public class ItemLinker extends ItemBase {
 
 	@Override
 	protected String getControlName() {
-		return "tile.controller.name";
+		return Controller.controller.getLocalizedName();
 	}
 
 	@Override
-	protected boolean onControlUsed(TileEntityBase<?> tempTile, EntityPlayer player, int par4, int par5, int par6, ItemStack stack) {
-		if (tempTile.getLinker() == null) {
-			if (this.link != tempTile) {
-				this.link.setEditing(false);
-				this.link.setLinker(null);
-				this.link = tempTile;
-				player.addChatComponentMessage(new ChatComponentText(MESSAGE_2));
-			}
-			tempTile.setLinker(this);
-			player.addChatComponentMessage(new ChatComponentText(MESSAGE_1 + par4 + ", " + par5 + ", " + par6));
-			setEditAndTag(new int[] { par4, par5, par6 }, stack);
+	protected boolean onControlUsed(TileEntityBase<?> tempTile, EntityPlayer player, ItemStack stack, TileEntityBase link) {
+		if (super.onControlUsed(tempTile, player, stack, link)) {
 			return true;
-		} else if (tempTile.getLinker() == this) {
+		} else if (ItemStack.areItemStackTagsEqual(tempTile.getLinker(), stack)) {
 			tempTile.setLinker(null);
 			tempTile.setEditing(false);
 			stack.getTagCompound().removeTag(KEYTAG);
-			this.resetLinker();
-			player.addChatComponentMessage(new ChatComponentText(MESSAGE_2));
+			player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_2, getControlName()));
 			return true;
 		}
 		return false;

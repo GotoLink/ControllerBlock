@@ -70,7 +70,8 @@ public class AnimatorGUI extends GuiContainer {
 		return "textures/gui/" + (remote ? "remote" : "controller") + "gui.png";
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public void initGui() {
 		super.initGui();
 		//id, x, y, width, height, text

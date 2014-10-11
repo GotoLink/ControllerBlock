@@ -8,12 +8,13 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.item.ItemStack;
 
 public class ContainerAnimator extends ContainerBase {
 	private int oldDelay, oldMode, oldFrame, oldMax = -1;
 	private final boolean isRemote;
     private boolean corner;
-	private ItemBase remote;
+	private ItemStack remote;
 	private final static int DELAY_INDEX = 0, MODE_INDEX = 1, FRAME_INDEX = 2, MAX_INDEX = 3, CORNER_INDEX = 4;
 
 	public ContainerAnimator(InventoryPlayer inventory, TileEntityAnimator tile, boolean hasSlots) {
@@ -25,8 +26,8 @@ public class ContainerAnimator extends ContainerBase {
 		this.isRemote = !hasSlots;
 		if (isRemote) {
 			if (inventory.player.getHeldItem().getItem() instanceof ItemBase) {
-				remote = (ItemBase) inventory.player.getHeldItem().getItem();
-				this.corner = remote.isInCornerMode();
+				remote = inventory.player.getHeldItem();
+				this.corner = ItemBase.isInCornerMode(remote);
 			}
 		} else {
 			//Adding animator slots
@@ -82,9 +83,9 @@ public class ContainerAnimator extends ContainerBase {
 				icrafting.sendProgressBarUpdate(this, MAX_INDEX, ((TileEntityAnimator) this.control).getMaxFrame());
 				this.oldMax = ((TileEntityAnimator) this.control).getMaxFrame();
 			}
-			if (this.isRemote && this.corner != this.remote.isInCornerMode()) {
-				icrafting.sendProgressBarUpdate(this, CORNER_INDEX, this.remote.isInCornerMode() ? 1 : 0);
-				this.corner = this.remote.isInCornerMode();
+			if (this.isRemote && this.corner != ItemBase.isInCornerMode(remote)) {
+				icrafting.sendProgressBarUpdate(this, CORNER_INDEX, ItemBase.isInCornerMode(remote) ? 1 : 0);
+				this.corner = ItemBase.isInCornerMode(remote);
 			}
 		}
 	}
@@ -111,7 +112,7 @@ public class ContainerAnimator extends ContainerBase {
 			this.oldMax = par2;
 			break;
 		case CORNER_INDEX:
-			this.remote.setCornerMode(par2 == 1);
+            ItemBase.setCornerMode(this.remote, par2 == 1);
 			this.corner = par2 == 1;
 			break;
 		}

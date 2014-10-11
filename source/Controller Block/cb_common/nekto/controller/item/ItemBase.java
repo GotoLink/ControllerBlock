@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -19,19 +20,16 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ItemBase extends Item {
-	public TileEntityBase<?> link = null;
 	public final static String KEYTAG = "Control";
 	public final static String MESS = "chat.item.message";
-	public String MESSAGE_0 = StatCollector.translateToLocal(getUnlocalizedName()) + " " + StatCollector.translateToLocal(MESS + 1);
-	public String MESSAGE_1 = StatCollector.translateToLocal(MESS + 2) + " " + StatCollector.translateToLocal(getControlName()) + " at ";
-	public String MESSAGE_2 = StatCollector.translateToLocal(MESS + 3) + " " + StatCollector.translateToLocal(getControlName());
-	public String MESSAGE_3 = StatCollector.translateToLocal(getControlName()) + " " + StatCollector.translateToLocal(MESS + 4) + " " + StatCollector.translateToLocal(getUnlocalizedName());
-	public String MESSAGE_4 = StatCollector.translateToLocal(MESS + "5.part1") + " " + StatCollector.translateToLocal(getControlName()) + " " + StatCollector.translateToLocal(MESS + "5.part2");
-	public final static String MESSAGE_5 = StatCollector.translateToLocal(MESS + 6) + " ";
-	public final static String MESSAGE_6 = StatCollector.translateToLocal(MESS + 7);
-	public final static String MESSAGE_7 = StatCollector.translateToLocal(MESS + 8);
-	public int[] corner = null;
-	private boolean isCornerMode = false;
+	public final static String MESSAGE_0 = MESS + 1;
+	public String MESSAGE_1 = StatCollector.translateToLocal(MESS + 2) + " " + getControlName() + " at ";
+	public final static String MESSAGE_2 = MESS + 3;
+	public final static String MESSAGE_3 = MESS + 4;
+	public String MESSAGE_4 = StatCollector.translateToLocal(MESS + "5.part1") + " " + getControlName() + " " + StatCollector.translateToLocal(MESS + "5.part2");
+	public final static String MESSAGE_5 = MESS + 6;
+	public final static String MESSAGE_6 = MESS + 7;
+	public final static String MESSAGE_7 = MESS + 8;
 
 	public ItemBase() {
 		super();
@@ -50,9 +48,10 @@ public abstract class ItemBase extends Item {
 		}
 	}
 
-	public boolean isInCornerMode() {
-		return this.isCornerMode;
-	}
+    @Override
+    public String getItemStackDisplayName(ItemStack stack){
+        return StatCollector.translateToLocal(getUnlocalizedName(stack) + ".name");
+    }
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
@@ -62,48 +61,49 @@ public abstract class ItemBase extends Item {
 				int i = movingobjectposition.blockX;
 				int j = movingobjectposition.blockY;
 				int k = movingobjectposition.blockZ;
-				TileEntityBase<?> tempTile = null;
+				TileEntityBase<?> newControl = null;
 				if (isController(i, j, k, world)) {
-					tempTile = (TileEntityBase<?>) world.getTileEntity(i, j, k);
+					newControl = (TileEntityBase<?>) world.getTileEntity(i, j, k);
 				}
 				if (itemStack.hasTagCompound() && itemStack.stackTagCompound.hasKey(KEYTAG)) {
-					if (this.link == null) {
-						int[] pos = itemStack.getTagCompound().getIntArray(KEYTAG);
-						//Try to find the old controller block to set its linker
-						if (isController(pos[0], pos[1], pos[2], world)) {
-							setItemVar(world, pos);
-						} else//It had data on a block that doesn't exist anymore
-						{
-							itemStack.getTagCompound().removeTag(KEYTAG);
-							player.addChatComponentMessage(new ChatComponentText(MESSAGE_2));
-							return itemStack;
-						}
-					}
-					if (tempTile != null) {
-						if (!onControlUsed(tempTile, player, i, j, k, itemStack))
-							player.addChatComponentMessage(new ChatComponentText(MESSAGE_3));
+                    int[] pos = itemStack.getTagCompound().getIntArray(KEYTAG);
+                    //Try to find the old controller block to set its linker
+                    if (!isController(pos[0], pos[1], pos[2], world))//It had data on a block that doesn't exist anymore
+                    {
+                        itemStack.getTagCompound().removeTag(KEYTAG);
+                        player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_2, getControlName()));
+                        return itemStack;
+                    }
+					if (newControl != null) {
+						if (!onControlUsed(newControl, player, itemStack, (TileEntityBase<?>) world.getTileEntity(pos[0], pos[1], pos[2])))
+							player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_3, getControlName(), getItemStackDisplayName(itemStack)));
 						//Another player might be editing, let's avoid any issue and do nothing.
 					} else if (!world.isAirBlock(i, j, k)) {
-						onBlockSelected(player, world, world.getBlock(i, j, k), i, j, k, world.getBlockMetadata(i, j, k));
+						onBlockSelected(itemStack, player, world, world.getBlock(i, j, k), i, j, k, world.getBlockMetadata(i, j, k), (TileEntityBase<?>) world.getTileEntity(pos[0], pos[1], pos[2]));
 					}
-				} else if (isController(i, j, k, world) && ((TileEntityBase<?>) world.getTileEntity(i, j, k)).getLinker() == null) {
+				} else if (newControl!=null && newControl.getLinker() == null) {
 					player.addChatComponentMessage(new ChatComponentText(MESSAGE_1 + i + ", " + j + ", " + k));
-					this.link = (TileEntityBase<?>) world.getTileEntity(i, j, k);
-					this.link.setLinker(this);
-					setEditAndTag(getStartData(i, j, k), itemStack);
-				} else
-					player.addChatComponentMessage(new ChatComponentText(MESSAGE_0 + MESSAGE_4));
+					newControl.setLinker(itemStack);
+					setEditAndTag(getStartData(i, j, k), itemStack, newControl);
+				} else {
+                    player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_0, getItemStackDisplayName(itemStack)));
+                    player.addChatComponentMessage(new ChatComponentText(MESSAGE_4));
+                }
 			}
 		}
 		return itemStack;
 	}
 
-	public void resetLinker() {
-		this.link = null;
-	}
+    public static boolean isInCornerMode(ItemStack stack) {
+        return (stack.hasTagCompound() && stack.getTagCompound().hasKey("Mode") && stack.getTagCompound().getBoolean("Mode"));
+    }
 
-	public void setCornerMode(boolean bool) {
-		this.isCornerMode = bool;
+	public static void setCornerMode(ItemStack stack, boolean bool) {
+        NBTTagCompound tag = new NBTTagCompound();
+        if(stack.hasTagCompound())
+            tag = stack.getTagCompound();
+        tag.setBoolean("Mode", bool);
+        stack.setTagCompound(tag);
 	}
 
 	protected abstract Class<? extends TileEntityBase<?>> getControl();
@@ -118,45 +118,36 @@ public abstract class ItemBase extends Item {
 	 * Fired if player selected a block which isn't a valid control
 	 * 
 	 * @param player
-	 * @param id
-	 *            blockID from {@link World#getBlock(int, int, int)}
-	 * @param meta
-	 *            block metadata {@link World#getBlockMetadata(int, int, int)}
+	 * @param id blockID from {@link World#getBlock(int, int, int)}
+	 * @param meta block metadata {@link World#getBlockMetadata(int, int, int)}
 	 */
-	protected void onBlockSelected(EntityPlayer player, World world, Block id, int par4, int par5, int par6, int meta) {
-		this.link.setEditing(true);
+	protected void onBlockSelected(ItemStack stack, EntityPlayer player, World world, Block id, int par4, int par5, int par6, int meta, TileEntityBase link) {
+		link.setEditing(true);
 		if (player.capabilities.isCreativeMode || id != Blocks.bedrock/* bedrock case out */) {
-			if (!isCornerMode && !player.isSneaking())
-				this.link.add(player, id, par4, par5, par6, meta, true);
+			if (!isInCornerMode(stack) && !player.isSneaking())
+				link.add(player, id, par4, par5, par6, meta, true);
 			else {
-				if (corner == null) {
+                int[] corner;
+				if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Corner")) {
 					corner = new int[] { par4, par5, par6 };
-					player.addChatComponentMessage(new ChatComponentText(MESSAGE_5 + par4 + ", " + par5 + ", " + par6));
+                    NBTTagCompound tag = new NBTTagCompound();
+                    if(stack.hasTagCompound())
+                        tag = stack.getTagCompound();
+                    tag.setIntArray("Corner", corner);
+                    stack.setTagCompound(tag);
+					player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_5, par4, par5, par6));
 				} else {
+                    corner = stack.getTagCompound().getIntArray("Corner");
 					if (!Arrays.equals(corner, new int[] { par4, par5, par6 })) {
-						onMultipleSelection(player, world, corner, new int[] { par4, par5, par6 });
-						player.addChatComponentMessage(new ChatComponentText(MESSAGE_6));
+						onMultipleSelection(player, world, corner, new int[] { par4, par5, par6 }, link);
+						player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_6));
 					} else
-						player.addChatComponentMessage(new ChatComponentText(MESSAGE_7));
-					corner = null;
+						player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_7));
+					stack.getTagCompound().removeTag("Corner");
 				}
 			}
 		}
 	}
-
-	/**
-	 * What should happen if the selected {@link TileEntityBase} by a player is
-	 * marked as already used by someone else
-	 * 
-	 * @param tempTile
-	 *            The selected TileEntity
-	 * @param player
-	 *            The player doing the use
-	 * @param stack
-	 *            The ItemStack used by player
-	 * @return false to send {@link #MESSAGE_3} to player
-	 */
-	protected abstract boolean onControlUsed(TileEntityBase<?> tempTile, EntityPlayer player, int par4, int par5, int par6, ItemStack stack);
 
 	/**
 	 * Helper function to set data into the item and its Control in editing mode
@@ -166,23 +157,13 @@ public abstract class ItemBase extends Item {
 	 * @param par1ItemStack
 	 *            The item that will get the data
 	 */
-	protected void setEditAndTag(int[] pos, ItemStack par1ItemStack) {
-		this.link.setEditing(true);
+	protected void setEditAndTag(int[] pos, ItemStack par1ItemStack, TileEntityBase link) {
+		link.setEditing(true);
 		NBTTagCompound tag = new NBTTagCompound();
+        if(par1ItemStack.hasTagCompound())
+            tag = par1ItemStack.getTagCompound();
 		tag.setIntArray(KEYTAG, pos);
 		par1ItemStack.setTagCompound(tag);
-	}
-
-	/**
-	 * Fired if link is null but item has NBTTag data pointing to a valid
-	 * control
-	 * 
-	 * @param world
-	 * @param data
-	 *            from the item {@link NBTTagCompound}
-	 */
-	protected void setItemVar(World world, int... data) {
-		this.link = (TileEntityBase<?>) world.getTileEntity(data[0], data[1], data[2]);
 	}
 
 	/**
@@ -204,7 +185,7 @@ public abstract class ItemBase extends Item {
 	 * @param endCorner
 	 *            the second selected block position
 	 */
-	private void onMultipleSelection(EntityPlayer player, World world, int[] corner, int[] endCorner) {
+	private void onMultipleSelection(EntityPlayer player, World world, int[] corner, int[] endCorner, TileEntityBase link) {
 		int temp;
 		//Sort the corners
 		for (int i = 0; i < corner.length; i++) {
@@ -219,7 +200,35 @@ public abstract class ItemBase extends Item {
 			for (int y = corner[1]; y <= endCorner[1]; y++)
 				for (int z = corner[2]; z <= endCorner[2]; z++) {
 					if (!world.isAirBlock(x, y, z))
-						this.link.add(player, world.getBlock(x, y, z), x, y, z, world.getBlockMetadata(x, y, z), false);
+						link.add(player, world.getBlock(x, y, z), x, y, z, world.getBlockMetadata(x, y, z), false);
 				}
 	}
+
+    /**
+     * What should happen if the selected {@link TileEntityBase} by a player is marked as already used by someone else
+     *
+     * @param newControl The selected TileEntity
+     * @param player The player doing the use
+     * @param stack The ItemStack used by player
+     * @param old stored in the ItemStack TagCompound
+     * @return false to send {@link #MESSAGE_3} to player
+     */
+    protected boolean onControlUsed(TileEntityBase<?> newControl, EntityPlayer player, ItemStack stack, TileEntityBase old) {
+        if (newControl.getLinker() == null) {
+            if (old != newControl) {
+                old.setEditing(false);
+                old.setLinker(null);
+                player.addChatComponentMessage(new ChatComponentTranslation(MESSAGE_2, getControlName()));
+            }
+            newControl.setLinker(stack);
+            player.addChatComponentMessage(new ChatComponentText(MESSAGE_1 + newControl.xCoord + ", " + newControl.yCoord + ", " + newControl.zCoord));
+            onReplaceControl(stack, newControl);
+            return true;
+        }
+        return false;
+    }
+
+    protected void onReplaceControl(ItemStack stack, TileEntityBase<?> tempTile){
+        setEditAndTag(new int[] { tempTile.xCoord, tempTile.yCoord, tempTile.zCoord }, stack, tempTile);
+    }
 }
