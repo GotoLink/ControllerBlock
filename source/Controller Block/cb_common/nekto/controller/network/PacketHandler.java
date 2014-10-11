@@ -1,10 +1,7 @@
 package nekto.controller.network;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import cpw.mods.fml.relauncher.Side;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import nekto.controller.animator.Mode;
 import nekto.controller.core.Controller;
 import nekto.controller.item.ItemBase;
@@ -23,8 +20,7 @@ public class PacketHandler {
 		case 1://Multiple block selection switch
 			ItemStack stack = player.getCurrentEquippedItem();
 			if (stack != null && stack.getItem() instanceof ItemBase) {
-				ItemBase item = (ItemBase) stack.getItem();
-				item.setCornerMode(!item.isInCornerMode());
+				ItemBase.setCornerMode(stack, !ItemBase.isInCornerMode(stack));
 			}
 			break;
 		case 2://Reset button
@@ -91,8 +87,6 @@ public class PacketHandler {
 
     public static void resetRemote(ItemStack stack) {
         if (stack.getItem() instanceof ItemBase) {
-            ItemBase remote = (ItemBase) stack.getItem();
-            remote.resetLinker();
             if (stack.hasTagCompound()) {
                 stack.getTagCompound().removeTag(ItemBase.KEYTAG);
             }
@@ -100,19 +94,10 @@ public class PacketHandler {
     }
 
     public static void sendDescription(TileEntityAnimator animator, World world) {
-        ByteBuf buf = Unpooled.buffer();
-        DescriptionPacket desc = new DescriptionPacket(animator);
-        desc.toBytes(buf);
-        FMLProxyPacket packet = new FMLProxyPacket(buf, GeneralRef.DESC_CHANNEL);
-        packet.setTarget(Side.CLIENT);
-        Controller.animatorDesc.sendToAllAround(packet, new NetworkRegistry.TargetPoint(world.provider.dimensionId, desc.data[0], desc.data[1], desc.data[2], 50));
+        Controller.animatorDesc.sendToAllAround(new DescriptionPacket(animator), new NetworkRegistry.TargetPoint(world.provider.dimensionId, animator.xCoord, animator.yCoord, animator.zCoord, 50));
     }
 
     public static void sendGuiChange(GuiChangePacket packet){
-        ByteBuf buf = Unpooled.buffer();
-        packet.toBytes(buf);
-        FMLProxyPacket message = new FMLProxyPacket(buf, GeneralRef.GUI_CHANNEL);
-        message.setTarget(Side.SERVER);
-        Controller.guiChange.sendToServer(message);
+        Controller.guiChange.sendToServer(packet);
     }
 }

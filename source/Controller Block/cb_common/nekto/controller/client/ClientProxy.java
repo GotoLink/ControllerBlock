@@ -1,5 +1,6 @@
 package nekto.controller.client;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import nekto.controller.block.BlockBase;
 import nekto.controller.gui.AnimatorGUI;
@@ -35,4 +36,7 @@ public class ClientProxy extends CommonProxy {
 			}
 		return null;
 	}
+
+    @Override
+    public World getClientWorld(){return FMLClientHandler.instance().getWorldClient();}
 }

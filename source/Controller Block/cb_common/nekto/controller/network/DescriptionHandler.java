@@ -1,22 +1,21 @@
 package nekto.controller.network;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import nekto.controller.animator.Mode;
+import nekto.controller.core.Controller;
 import nekto.controller.tile.TileEntityAnimator;
-import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 
-public class DescriptionHandler {
-    @SubscribeEvent
-    public void onMessage(FMLNetworkEvent.ClientCustomPacketEvent event) {
-        DescriptionPacket packet = new DescriptionPacket();
-        packet.fromBytes(event.packet.payload());
+public class DescriptionHandler implements IMessageHandler<DescriptionPacket, IMessage>{
+    @Override
+    public IMessage onMessage(DescriptionPacket packet, MessageContext context) {
         if(packet.data.length == 7){
             handleDescriptionPacket(packet);
         }
+        return null;
     }
 
     /**
@@ -25,12 +24,11 @@ public class DescriptionHandler {
      *
      * @param packet
      */
-    @SideOnly(Side.CLIENT)
     private void handleDescriptionPacket(DescriptionPacket packet) {
         int x = packet.data[0];
         int y = packet.data[1];
         int z = packet.data[2];
-        TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(x, y, z);
+        TileEntity te = Controller.proxy.getClientWorld().getTileEntity(x, y, z);
         if (te instanceof TileEntityAnimator) {
             TileEntityAnimator animator = (TileEntityAnimator) te;
             animator.setEditing(packet.edit);

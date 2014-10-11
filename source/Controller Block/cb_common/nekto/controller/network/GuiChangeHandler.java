@@ -1,7 +1,8 @@
 package nekto.controller.network;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import nekto.controller.container.ContainerAnimator;
 import nekto.controller.core.Controller;
 import nekto.controller.ref.GeneralRef;
@@ -10,21 +11,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.tileentity.TileEntity;
 
-public class GuiChangeHandler {
-
-    @SubscribeEvent
-    public void onServerMessage(FMLNetworkEvent.ServerCustomPacketEvent event) {
-        GuiChangePacket packet = new GuiChangePacket();
-        packet.fromBytes(event.packet.payload());
+public class GuiChangeHandler implements IMessageHandler<GuiChangePacket, GuiChangePacket>{
+    @Override
+    public GuiChangePacket onMessage(GuiChangePacket packet, MessageContext context) {
         if(packet.data.length>=4){
-            handleGuiChange(packet, ((NetHandlerPlayServer) event.handler).playerEntity);
+            handleGuiChange(packet, context.getServerHandler().playerEntity);
         }
+        return null;
     }
 
     /**
      * Server method to handle a client action in AnimatorGUI or RemoteKeyHandler
      */
-    private static void handleGuiChange(GuiChangePacket packet, EntityPlayer player) {
+    private void handleGuiChange(GuiChangePacket packet, EntityPlayer player) {
         TileEntity tile = player.worldObj.getTileEntity(packet.data[1], packet.data[2], packet.data[3]);
         if (tile instanceof TileEntityAnimator) {
             if (packet.data[0] >= 0)//From AnimatorGUI
