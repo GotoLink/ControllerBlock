@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class PacketHandler {
+public final class PacketHandler {
 	public static void handleRemoteData(EntityPlayer player, TileEntityAnimator animator, int... data) {
 		switch (data[0]) {
 		case 0://Frame selection

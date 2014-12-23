@@ -16,7 +16,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-public class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
+public final class TileEntityAnimator extends TileEntityBase<List<Object[]>> {
 	private int frame = 0, delay = 0, count = 0, max = -1;
 	private Mode currMode = Mode.ORDER;
 	private boolean removed;

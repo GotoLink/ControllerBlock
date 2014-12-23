@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL12;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class ControllerRenderer implements ISimpleBlockRenderingHandler {
+public final class ControllerRenderer implements ISimpleBlockRenderingHandler {
 	@Override
 	public void renderInventoryBlock(Block block, int i, int j, RenderBlocks renderblocks) {
 		if (block instanceof BlockBase) {
@@ -33,7 +33,6 @@ public class ControllerRenderer implements ISimpleBlockRenderingHandler {
 	}
 
 	@Override
-	//Unused anyway
 	public int getRenderId() {
 		return BlockBase.renderID;
 	}

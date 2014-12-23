@@ -18,15 +18,16 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemRemote extends ItemBase {
+public final class ItemRemote extends ItemBase {
     private final String FRAME_EDIT = StatCollector.translateToLocal("remote.frame.edit");
-    private final String FRAME_FINISH = "remote.frame.finish";
+    private final static String FRAME_FINISH = "remote.frame.finish";
 	public ItemRemote() {
 		super();
 		setUnlocalizedName("remote");
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		super.addInformation(stack, par2EntityPlayer, par3List, par4);

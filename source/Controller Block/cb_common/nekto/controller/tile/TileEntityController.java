@@ -12,7 +12,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class TileEntityController extends TileEntityBase<Object[]> {
+public final class TileEntityController extends TileEntityBase<Object[]> {
 	public TileEntityController() {
 		super(0);
 	}

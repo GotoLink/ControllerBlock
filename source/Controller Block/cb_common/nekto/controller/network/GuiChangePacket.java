@@ -3,11 +3,12 @@ package nekto.controller.network;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
 
-public class GuiChangePacket implements IMessage {
+public final class GuiChangePacket implements IMessage {
 
     public int[] data;
     public boolean remote;
 
+    @SuppressWarnings("UnusedDeclaration")
     public GuiChangePacket(){}
 
     public GuiChangePacket(boolean remote, int...data){

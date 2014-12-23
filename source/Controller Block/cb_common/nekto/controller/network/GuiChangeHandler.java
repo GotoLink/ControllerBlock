@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.tileentity.TileEntity;
 
-public class GuiChangeHandler implements IMessageHandler<GuiChangePacket, GuiChangePacket>{
+public final class GuiChangeHandler implements IMessageHandler<GuiChangePacket, GuiChangePacket>{
     @Override
     public GuiChangePacket onMessage(GuiChangePacket packet, MessageContext context) {
         if(packet.data.length>=4){

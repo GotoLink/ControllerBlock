@@ -67,9 +67,6 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	 *            The player sending the command
 	 * @param block
 	 *            From {@link World#getBlock(int,int,int)}
-	 * @param x
-	 * @param y
-	 * @param z
 	 * @param blockMetadata
 	 *            From {@link World#getBlockMetadata(int,int,int)}
 	 * @param send
@@ -114,8 +111,8 @@ public abstract class TileEntityBase<e> extends TileEntity implements IInventory
 	/**
 	 * Prints data with separator for easier to read messages
 	 * 
-	 * @param data
-	 * @return
+	 * @param data to print
+	 * @return an easier to read message
 	 */
 	private static String dataAsString(Object[] data) {
 		return ((Block)data[0]).getLocalizedName() + data[4] + " [" + data[1] + "," + data[2] + "," + data[3] + "] ";

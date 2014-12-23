@@ -7,7 +7,7 @@ import nekto.controller.tile.TileEntityController;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class BlockController extends BlockBase {
+public final class BlockController extends BlockBase {
 	public BlockController() {
 		super();
         setBlockName("controller");

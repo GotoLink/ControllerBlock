@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 
-public class RemoteKeyHandler {
+public final class RemoteKeyHandler {
 	public static final KeyBinding keyBind = new KeyBinding("remote.control.key", Keyboard.KEY_R, "key.categories.item.special");
 
     public RemoteKeyHandler(){
@@ -23,7 +23,7 @@ public class RemoteKeyHandler {
 
     @SubscribeEvent
 	public void keyDown(InputEvent.KeyInputEvent event) {
-		if (Keyboard.getEventKey() == keyBind.getKeyCode()) {
+		if (Keyboard.getEventKey() == keyBind.getKeyCode() && Keyboard.getEventKeyState()) {
 			if (Minecraft.getMinecraft().currentScreen == null) {
 				EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
 				if (player != null) {

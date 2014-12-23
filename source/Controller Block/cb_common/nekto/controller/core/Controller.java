@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Set;
 
 @Mod(modid = GeneralRef.MOD_ID, name = GeneralRef.MOD_NAME, version = GeneralRef.VERSION)
-public class Controller {
+public final class Controller {
 	//Blocks
 	public static Block controller, animator;
 	//Items
@@ -99,7 +99,6 @@ public class Controller {
 	public void preLoad(FMLPreInitializationEvent event) {
         logger = event.getModLog();
 		config = new Configuration(event.getSuggestedConfigurationFile(), true);
-		config.load();
         boolean control = config.getBoolean("Controller", "General", true, "Should block and corresponding item be added to the game");
         boolean animate = config.getBoolean("Animator", "General", true, "Should block and corresponding item be added to the game");
 		if(control) {
@@ -114,7 +113,7 @@ public class Controller {
             GameRegistry.registerBlock(animator, "animator");
             GameRegistry.registerItem(remote, "remote");
         }
-		tickDisplay = config.get("Client", "Show delay as ticks", false).getBoolean(false);
+		tickDisplay = config.get("Client", "Show delay as ticks", false).getBoolean();
 	}
 
     private ShapedOreRecipe parse(String[] option, ItemStack output){

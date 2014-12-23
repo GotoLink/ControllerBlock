@@ -4,10 +4,11 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
 import nekto.controller.tile.TileEntityAnimator;
 
-public class DescriptionPacket implements IMessage {
+public final class DescriptionPacket implements IMessage {
     public int[] data = new int[7];
     public boolean edit;
     public short mode;
+    @SuppressWarnings("UnusedDeclaration")
     public DescriptionPacket(){}
     public DescriptionPacket(TileEntityAnimator animator){
         this.data[0] = animator.xCoord;

@@ -104,15 +104,17 @@ public abstract class BlockBase extends Block {
 	@Override
 	public void breakBlock(World world, int par2, int par3, int par4, Block par5, int par6) {
 		TileEntityBase<?> tile = (TileEntityBase<?>) world.getTileEntity(par2, par3, par4);
-		if (!world.isRemote && tile.isPowered() && !tile.isEditing())//We only spawn items if it is powered and not in editing mode
-		{
-			Iterator<?> itr = tile.getBaseList().iterator();
-			dropItems(world, tile, itr, par2, par3, par4);
-		}
-        ItemStack link = tile.getLinker();
-        if(link!=null && link.hasTagCompound())
-            link.getTagCompound().removeTag(ItemBase.KEYTAG);
-        tile.setLinker(null);
+        if(tile!=null) {
+            if (!world.isRemote && tile.isPowered() && !tile.isEditing())//We only spawn items if it is powered and not in editing mode
+            {
+                Iterator<?> itr = tile.getBaseList().iterator();
+                dropItems(world, tile, itr, par2, par3, par4);
+            }
+            ItemStack link = tile.getLinker();
+            if (link != null && link.hasTagCompound())
+                link.getTagCompound().removeTag(ItemBase.KEYTAG);
+            tile.setLinker(null);
+        }
 		super.breakBlock(world, par2, par3, par4, par5, par6);
 	}
 

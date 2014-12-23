@@ -13,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class BlockAnimator extends BlockBase {
+public final class BlockAnimator extends BlockBase {
 	public BlockAnimator() {
 		super();
         setBlockName("animator");
@@ -37,7 +37,8 @@ public class BlockAnimator extends BlockBase {
 		return false;
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	protected void dropItems(World world, TileEntityBase<?> tile, Iterator<?> itr, int par2, int par3, int par4) {
 		List<Object[]> frames;
 		int index = 0;

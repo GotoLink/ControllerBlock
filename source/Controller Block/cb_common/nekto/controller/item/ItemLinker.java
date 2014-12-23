@@ -12,7 +12,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.StatCollector;
 
-public class ItemLinker extends ItemBase {
+public final class ItemLinker extends ItemBase {
 	public ItemLinker() {
 		super();
 		setUnlocalizedName("linker");

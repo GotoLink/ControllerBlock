@@ -37,7 +37,8 @@ public abstract class ItemBase extends Item {
 		setCreativeTab(CreativeTabs.tabRedstone);
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		if (stack.hasTagCompound() && stack.stackTagCompound.hasKey(KEYTAG)) {
@@ -117,7 +118,7 @@ public abstract class ItemBase extends Item {
 	/**
 	 * Fired if player selected a block which isn't a valid control
 	 * 
-	 * @param player
+	 * @param player the player who selected a block
 	 * @param id blockID from {@link World#getBlock(int, int, int)}
 	 * @param meta block metadata {@link World#getBlockMetadata(int, int, int)}
 	 */

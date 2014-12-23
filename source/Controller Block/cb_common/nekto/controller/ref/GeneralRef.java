@@ -3,7 +3,7 @@
  */
 package nekto.controller.ref;
 
-public class GeneralRef {
+public final class GeneralRef {
 	public static final String MOD_ID = "CB";
 	public static final String MOD_NAME = "Controller Block";
 	public static final String VERSION = "1.1";

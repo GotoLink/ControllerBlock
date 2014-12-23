@@ -10,7 +10,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.item.ItemStack;
 
-public class ContainerAnimator extends ContainerBase {
+import java.util.List;
+
+public final class ContainerAnimator extends ContainerBase {
 	private int oldDelay, oldMode, oldFrame, oldMax = -1;
 	private final boolean isRemote;
     private boolean corner;
@@ -62,11 +64,11 @@ public class ContainerAnimator extends ContainerBase {
 		return this.isRemote || super.canInteractWith(player);
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		for (int i = 0; i < this.crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting) this.crafters.get(i);
+		for (ICrafting icrafting: (List<ICrafting>) this.crafters) {
 			if (this.oldDelay != ((TileEntityAnimator) this.control).getDelay()) {
 				icrafting.sendProgressBarUpdate(this, DELAY_INDEX, ((TileEntityAnimator) this.control).getDelay());
 				this.oldDelay = ((TileEntityAnimator) this.control).getDelay();
