@@ -2,68 +2,64 @@ package nekto.controller.render.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-@Deprecated()
-public class ModelAnimator extends ModelBase {
-	//fields
-	ModelRenderer Top;
-	ModelRenderer Base;
-	ModelRenderer Bars;
-	ModelRenderer Orb;
 
-	public ModelAnimator() {
-		textureWidth = 64;
-		textureHeight = 32;
-		setTextureOffset("Bars.Bar1", 0, 0);
-		setTextureOffset("Bars.Bar2", 0, 0);
-		setTextureOffset("Bars.Bar3", 0, 0);
-		setTextureOffset("Bars.Bar4", 0, 0);
-		setTextureOffset("Orb.Orb1", 0, 20);
-		setTextureOffset("Orb.Orb2", 9, 20);
-		setTextureOffset("Orb.Orb3", 0, 28);
-		setTextureOffset("Orb.Orb4", 27, 19);
-		Top = new ModelRenderer(this, 0, 0);
-		Top.addBox(0F, 0F, 0F, 16, 3, 16);
-		Top.setRotationPoint(-8F, 8F, -8F);
-		Top.setTextureSize(64, 32);
-		Top.mirror = true;
-		setRotation(Top, 0F, 0F, 0F);
-		Base = new ModelRenderer(this, 0, 0);
-		Base.addBox(0F, 0F, 0F, 16, 3, 16);
-		Base.setRotationPoint(-8F, 21F, -8F);
-		Base.setTextureSize(64, 32);
-		Base.mirror = true;
-		setRotation(Base, 0F, 0F, 0F);
-		Bars = new ModelRenderer(this, "Bars");
-		Bars.setRotationPoint(0F, 0F, 0F);
-		setRotation(Bars, 0F, 0F, 0F);
-		Bars.mirror = true;
-		Bars.addBox("Bar1", -8F, 8F, -8F, 2, 14, 2);
-		Bars.addBox("Bar2", 6F, 8F, -8F, 2, 14, 2);
-		Bars.addBox("Bar3", 6F, 8F, 6F, 2, 14, 2);
-		Bars.addBox("Bar4", -8F, 9F, 6F, 2, 14, 2);
-		Orb = new ModelRenderer(this, "Orb");
-		Orb.setRotationPoint(-1F, 13F, -1F);
-		setRotation(Orb, 0F, 0F, 0F);
-		Orb.mirror = true;
-		Orb.addBox("Orb1", 0F, 0F, 0F, 2, 5, 2);
-		Orb.addBox("Orb2", -1F, 1F, -1F, 4, 3, 4);
-		Orb.addBox("Orb3", -2F, 2F, 0F, 6, 1, 2);
-		Orb.addBox("Orb4", 0F, 2F, -2F, 2, 1, 6);
-	}
+public final class ModelAnimator extends ModelBase {
+    private final ModelRenderer Cage0;
+    private final ModelRenderer Cage1;
+    private final ModelRenderer Frame0;
+    private final ModelRenderer Frame1;
+    private final ModelRenderer Orb0;
+    private final ModelRenderer Orb1;
 
-	public void render(float f) {
-		Top.render(f);
-		Base.render(f);
-		Bars.render(f);
-	}
+    public ModelAnimator() {
+        this.textureWidth = 64;
+        this.textureHeight = 64;
+        this.Orb0 = new ModelRenderer(this, 0, 28);
+        this.Orb0.mirror = true;
+        this.Orb0.setRotationPoint(-1.0F, 13.0F, -1.0F);
+        this.Orb0.addBox(0.0F, 0.0F, 0.0F, 2, 5, 2);
+        this.Orb1 = new ModelRenderer(this, 0, 20);
+        this.Orb1.mirror = true;
+        this.Orb1.setRotationPoint(-1.0F, 13.0F, -1.0F);
+        this.Orb1.addBox(-1.0F, 1.0F, -1.0F, 4, 3, 4);
+        this.Cage0 = new ModelRenderer(this, 50, 0);
+        this.Cage0.mirror = true;
+        this.Cage0.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.Cage0.addBox(5.0F, 11.0F, 7.0F, 2, 10, 1);
+        this.Cage0.addBox(-7.0F, 11.0F, 7.0F, 2, 10, 1);
+        this.Cage0.addBox(-7.0F, 11.0F, -8.0F, 2, 10, 1);
+        this.Cage0.addBox(5.0F, 11.0F, -8.0F, 2, 10, 1);
+        this.Cage1 = new ModelRenderer(this, 50, 0);
+        this.Cage1.mirror = true;
+        this.Cage1.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.Cage1.addBox(-7.0F, 11.0F, 7.0F, 2, 10, 1);
+        this.Cage1.addBox(-7.0F, 11.0F, -8.0F, 2, 10, 1);
+        this.Cage1.addBox(5.0F, 11.0F, -8.0F, 2, 10, 1);
+        this.Cage1.addBox(5.0F, 11.0F, 7.0F, 2, 10, 1);
+        this.Cage1.rotateAngleY = (float) Math.PI / 2;
+        this.Frame0 = new ModelRenderer(this, 0, 0);
+        this.Frame0.mirror = true;
+        this.Frame0.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.Frame0.addBox(-7.0F, 8.0F, -8.0F, 14, 3, 16);
+        this.Frame0.addBox(-7.0F, 21.0F, -8.0F, 14, 3, 16);
+        this.Frame1 = new ModelRenderer(this, 30, 20);
+        this.Frame1.mirror = true;
+        this.Frame1.setRotationPoint(0.0F, 0.0F, 0.0F);
+        this.Frame1.addBox(-8.0F, 8.0F, -7.0F, 1, 3, 14);
+        this.Frame1.addBox(-8.0F, 21.0F, -7.0F, 1, 3, 14);
+        this.Frame1.addBox(7.0F, 8.0F, -7.0F, 1, 3, 14);
+        this.Frame1.addBox(7.0F, 21.0F, -7.0F, 1, 3, 14);
+    }
 
-	public void renderOrb(float f) {
-		Orb.render(f);
-	}
+    public void render(float f) {
+        this.Cage0.render(f);
+        this.Cage1.render(f);
+        this.Frame0.render(f);
+        this.Frame1.render(f);
+    }
 
-	private void setRotation(ModelRenderer model, float x, float y, float z) {
-		model.rotateAngleX = x;
-		model.rotateAngleY = y;
-		model.rotateAngleZ = z;
-	}
+    public void renderOrb(float f) {
+        this.Orb0.render(f);
+        this.Orb1.render(f);
+    }
 }
