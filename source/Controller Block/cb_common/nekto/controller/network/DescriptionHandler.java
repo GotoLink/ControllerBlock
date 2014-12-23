@@ -1,6 +1,5 @@
 package nekto.controller.network;
 
-import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import nekto.controller.animator.Mode;
@@ -8,10 +7,10 @@ import nekto.controller.core.Controller;
 import nekto.controller.tile.TileEntityAnimator;
 import net.minecraft.tileentity.TileEntity;
 
-public final class DescriptionHandler implements IMessageHandler<DescriptionPacket, DescriptionPacket>{
+public final class DescriptionHandler implements IMessageHandler<DescriptionPacket, DescriptionPacket> {
     @Override
     public DescriptionPacket onMessage(DescriptionPacket packet, MessageContext context) {
-        if(packet.data.length == 7){
+        if (packet.data.length == 7) {
             handleDescriptionPacket(packet);
         }
         return null;

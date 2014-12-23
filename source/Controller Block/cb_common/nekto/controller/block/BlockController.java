@@ -8,13 +8,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 public final class BlockController extends BlockBase {
-	public BlockController() {
-		super();
+    public BlockController() {
+        super();
         setBlockName("controller");
-	}
+    }
 
-	@Override
-	public TileEntity createTileEntity(World world, int i) {
-		return new TileEntityController();
-	}
+    @Override
+    public TileEntity createTileEntity(World world, int i) {
+        return new TileEntityController();
+    }
 }

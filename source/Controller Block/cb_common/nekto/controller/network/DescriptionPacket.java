@@ -8,9 +8,12 @@ public final class DescriptionPacket implements IMessage {
     public int[] data = new int[7];
     public boolean edit;
     public short mode;
+
     @SuppressWarnings("UnusedDeclaration")
-    public DescriptionPacket(){}
-    public DescriptionPacket(TileEntityAnimator animator){
+    public DescriptionPacket() {
+    }
+
+    public DescriptionPacket(TileEntityAnimator animator) {
         this.data[0] = animator.xCoord;
         this.data[1] = animator.yCoord;
         this.data[2] = animator.zCoord;
@@ -21,9 +24,10 @@ public final class DescriptionPacket implements IMessage {
         this.data[6] = animator.getDelay();
         this.mode = (short) animator.getMode().ordinal();
     }
+
     @Override
     public void fromBytes(ByteBuf buf) {
-        for(int i = 0; i<data.length; i++)
+        for (int i = 0; i < data.length; i++)
             data[i] = buf.readInt();
         edit = buf.readBoolean();
         mode = buf.readShort();
@@ -31,7 +35,7 @@ public final class DescriptionPacket implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        for(int i:data)
+        for (int i : data)
             buf.writeInt(i);
         buf.writeBoolean(edit);
         buf.writeShort(mode);

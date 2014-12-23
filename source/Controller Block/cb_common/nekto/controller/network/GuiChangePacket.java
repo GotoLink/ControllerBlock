@@ -9,9 +9,10 @@ public final class GuiChangePacket implements IMessage {
     public boolean remote;
 
     @SuppressWarnings("UnusedDeclaration")
-    public GuiChangePacket(){}
+    public GuiChangePacket() {
+    }
 
-    public GuiChangePacket(boolean remote, int...data){
+    public GuiChangePacket(boolean remote, int... data) {
         this.remote = remote;
         this.data = data;
     }

@@ -3,27 +3,26 @@
  */
 package nekto.controller.tile;
 
-import java.util.Iterator;
-import java.util.List;
-
 import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public final class TileEntityController extends TileEntityBase<Object[]> {
-	public TileEntityController() {
-		super(0);
-	}
+import java.util.List;
 
-	@Override
-	protected List<Object[]> getBlockList() {
-		return getBaseList();
-	}
+public final class TileEntityController extends TileEntityBase<Object[]> {
+    public TileEntityController() {
+        super(0);
+    }
 
     @Override
-    protected void onRedstoneChange(){
+    protected List<Object[]> getBlockList() {
+        return getBaseList();
+    }
+
+    @Override
+    protected void onRedstoneChange() {
         if (isPowered()) {
             setActiveBlocks(getBlockList().iterator());
         } else {
@@ -31,55 +30,55 @@ public final class TileEntityController extends TileEntityBase<Object[]> {
         }
     }
 
-	@Override
-	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
-		super.writeToNBT(par1NBTTagCompound);
+    @Override
+    public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
+        super.writeToNBT(par1NBTTagCompound);
         Object[] objects;
         int[] data;
-		for (int index = 0; index < getBaseList().size(); index++) {
+        for (int index = 0; index < getBaseList().size(); index++) {
             objects = getBaseList().get(index);
-            if(objects!=null){
+            if (objects != null) {
                 data = new int[objects.length];
-                for(int i = 1; i < objects.length; i++){
+                for (int i = 1; i < objects.length; i++) {
                     data[i] = (Integer) objects[i];
                 }
                 data[0] = GameData.getBlockRegistry().getId((Block) objects[0]);
-			    par1NBTTagCompound.setIntArray(Integer.toString(index), data);
+                par1NBTTagCompound.setIntArray(Integer.toString(index), data);
             }
-		}
-	}
+        }
+    }
 
-	@Override
-	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
-		super.readFromNBT(par1NBTTagCompound);
-		int count = par1NBTTagCompound.getInteger("length");
+    @Override
+    public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+        super.readFromNBT(par1NBTTagCompound);
+        int count = par1NBTTagCompound.getInteger("length");
         Object[] objects;
         int[] data;
-		for (int index = 0; index < count; index++) {
+        for (int index = 0; index < count; index++) {
             data = par1NBTTagCompound.getIntArray(Integer.toString(index));
-            if(data.length>0){
+            if (data.length > 0) {
                 objects = new Object[data.length];
                 objects[0] = GameData.getBlockRegistry().getObjectById(data[0]);
-                for(int i = 1; i < objects.length; i++){
+                for (int i = 1; i < objects.length; i++) {
                     objects[i] = data[i];
                 }
                 this.getBaseList().add(objects);
             }
-		}
-	}
+        }
+    }
 
-	@Override
-	public String getInventoryName() {
-		return "Controller.inventory";
-	}
+    @Override
+    public String getInventoryName() {
+        return "Controller.inventory";
+    }
 
-	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		return i < getSizeInventory() && itemstack.getItem() instanceof ItemBlock;
-	}
+    @Override
+    public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+        return i < getSizeInventory() && itemstack.getItem() instanceof ItemBlock;
+    }
 
-	@Override
-	public String getName() {
-		return "controller";
-	}
+    @Override
+    public String getName() {
+        return "controller";
+    }
 }

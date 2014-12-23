@@ -1,6 +1,5 @@
 package nekto.controller.network;
 
-import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import nekto.controller.container.ContainerAnimator;
@@ -8,13 +7,12 @@ import nekto.controller.core.Controller;
 import nekto.controller.ref.GeneralRef;
 import nekto.controller.tile.TileEntityAnimator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.tileentity.TileEntity;
 
-public final class GuiChangeHandler implements IMessageHandler<GuiChangePacket, GuiChangePacket>{
+public final class GuiChangeHandler implements IMessageHandler<GuiChangePacket, GuiChangePacket> {
     @Override
     public GuiChangePacket onMessage(GuiChangePacket packet, MessageContext context) {
-        if(packet.data.length>=4){
+        if (packet.data.length >= 4) {
             handleGuiChange(packet, context.getServerHandler().playerEntity);
         }
         return null;
@@ -35,7 +33,7 @@ public final class GuiChangeHandler implements IMessageHandler<GuiChangePacket, 
                 }
                 if (player.openContainer instanceof ContainerAnimator && ((ContainerAnimator) player.openContainer).getControl() == tile)
                     player.openContainer.detectAndSendChanges();
-                PacketHandler.sendDescription((TileEntityAnimator)tile, player.worldObj);
+                PacketHandler.sendDescription((TileEntityAnimator) tile, player.worldObj);
             } else//From RemoteKeyHandler
             {
                 player.openGui(Controller.instance, GeneralRef.REMOTE_GUI_ID, player.worldObj, packet.data[1], packet.data[2], packet.data[3]);

@@ -11,29 +11,28 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
-
 import org.lwjgl.input.Keyboard;
 
 public final class RemoteKeyHandler {
-	public static final KeyBinding keyBind = new KeyBinding("remote.control.key", Keyboard.KEY_R, "key.categories.item.special");
+    public static final KeyBinding keyBind = new KeyBinding("remote.control.key", Keyboard.KEY_R, "key.categories.item.special");
 
-    public RemoteKeyHandler(){
+    public RemoteKeyHandler() {
         ClientRegistry.registerKeyBinding(keyBind);
     }
 
     @SubscribeEvent
-	public void keyDown(InputEvent.KeyInputEvent event) {
-		if (Keyboard.getEventKey() == keyBind.getKeyCode() && Keyboard.getEventKeyState()) {
-			if (Minecraft.getMinecraft().currentScreen == null) {
-				EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-				if (player != null) {
-					ItemStack stack = player.inventory.getCurrentItem();
-					if (stack != null && stack.getItem() instanceof ItemRemote && stack.hasTagCompound() && stack.getTagCompound().hasKey(ItemBase.KEYTAG)) {
-						int[] data = stack.getTagCompound().getIntArray(ItemBase.KEYTAG);
-						PacketHandler.sendGuiChange(new GuiChangePacket(true, -1, data[0], data[1], data[2]));
-					}
-				}
-			}
-		}
-	}
+    public void keyDown(InputEvent.KeyInputEvent event) {
+        if (Keyboard.getEventKey() == keyBind.getKeyCode() && Keyboard.getEventKeyState()) {
+            if (Minecraft.getMinecraft().currentScreen == null) {
+                EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+                if (player != null) {
+                    ItemStack stack = player.inventory.getCurrentItem();
+                    if (stack != null && stack.getItem() instanceof ItemRemote && stack.hasTagCompound() && stack.getTagCompound().hasKey(ItemBase.KEYTAG)) {
+                        int[] data = stack.getTagCompound().getIntArray(ItemBase.KEYTAG);
+                        PacketHandler.sendGuiChange(new GuiChangePacket(true, -1, data[0], data[1], data[2]));
+                    }
+                }
+            }
+        }
+    }
 }
