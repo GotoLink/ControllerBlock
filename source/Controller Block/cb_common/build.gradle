@@ -17,12 +17,13 @@ buildscript {
 apply plugin: 'forge'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
+version = "1.1(1.7.10)"
+archivesBaseName = "Controller Block"
 minecraft {
     version = "1.7.10-10.13.2.1230"
     runDir = "eclipse"
+    replace '$version', version
 }
-version = "1.1(1.7.10)"
-archivesBaseName = "Controller Block"
 sourceSets.main.java{srcDirs project.projectDir.getPath() include("nekto/**")}
 sourceSets.main.resources{srcDirs project.projectDir.getPath() include("assets/**" , "*.info", "*.mcmeta")}
 processResources {

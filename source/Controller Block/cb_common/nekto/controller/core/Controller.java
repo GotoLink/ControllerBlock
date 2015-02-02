@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Set;
 
-@Mod(modid = GeneralRef.MOD_ID, name = GeneralRef.MOD_NAME, version = GeneralRef.VERSION)
+@Mod(modid = GeneralRef.MOD_ID, name = GeneralRef.MOD_NAME, version = "$version")
 public final class Controller {
     //Blocks
     public static Block controller, animator;
