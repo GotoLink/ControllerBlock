@@ -1,16 +1,21 @@
+
 tile.animator.name=Аниматор
 tile.controller.name=Контроллер
 item.linker.name=Соединитель
 item.remote.name=Пульт
 
 remote.control.key=Управление пультом
+key.categories.item.special=Клавиши специального предмета
 
-chat.item.message1=не соединён
+chat.item.message1=%1$s не соединён
 chat.item.message2=Соединён с
-chat.item.message3=Отсоединён от
-chat.item.message4=уже соединён к другому
+chat.item.message3=Отсоединён от %1$s
+chat.item.message4=%1$s уже присоединён к другому %2$s
 chat.item.message5.part1=ПКМ по
 chat.item.message5.part2=блоку, чтобы начать соединение
-chat.item.message6=Добавлен первый угол в выбор
+chat.item.message6=Добавлен первый угол в выбор %1$s , %2$s , %3$s
 chat.item.message7=Выбор завершён
 chat.item.message8=Удалён угол из выбора
+
+remote.frame.edit=Редактирование фрейма #
+remote.frame.finish=Фрейм завершён #%1$s Продолжение с фреймом #%2$s
